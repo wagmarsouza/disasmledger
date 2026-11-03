@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.env
+.env.*
+*.pem
+*.key
+*.sqlite
+*.db
+*.bin
+*.elf
+*.hex
+*.dump
+*.log
