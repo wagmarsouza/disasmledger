@@ -1,39 +1,39 @@
-# Evidências, bancada e teto de alegação
+# Evidence, benches, and claim ceilings
 
-## Força de cada resultado
+## Strength of each result
 
-| Método | Alegação possível, quando sustentada | Lacuna que permanece |
+| Method | Permitted claim, when supported | Remaining gap |
 | --- | --- | --- |
-| Hash e mapa declarado | Estes bytes e estes intervalos foram usados; o mapa é internamente consistente | Arquitetura/base corretas, legitimidade e comportamento |
-| Inspeção estática | Estas instruções/refs sustentam esta hipótese delimitada | Decodificação, caminhos indiretos e comportamento real podem divergir |
-| Função isolada | O trecho produziu o resultado observado sob estas entradas e estado | ABI, periféricos, concorrência e integração completos |
-| Boot/integração emulada | Estes estados/efeitos ocorreram no modelo descrito | Fidelidade dos periféricos e comportamento no hardware |
-| Observação em hardware | O dispositivo/configuração observados tiveram este comportamento nestas condições | Outros dispositivos, entradas, versões e universalidade |
+| Hash and declared map | These bytes and ranges were used; the map is internally consistent | Correct architecture and base, legitimacy, and behaviour |
+| Static inspection | These instructions and references support this bounded hypothesis | Decoding, indirect paths, and actual behaviour may differ |
+| Isolated function | The region produced the observed result under these inputs and state | Complete ABI, peripherals, concurrency, and integration |
+| Emulated boot or integration | These states and effects occurred in the described model | Peripheral fidelity and behaviour on hardware |
+| Hardware observation | The observed device and configuration behaved this way under these conditions | Other devices, inputs, versions, and universality |
 
-Os níveis não são uma escada automática. Observação em hardware pode ser estreita; uma prova estática específica pode responder melhor a outra pergunta. Não converter quantidade de logs em probabilidade de verdade.
+These levels are not an automatic ladder. A hardware observation may be narrow, while a specific static proof may answer a different question better. Never convert log volume into a probability of truth.
 
-## Preparar um experimento pertinente
+## Preparing a relevant experiment
 
-Explicitar entrada/estado inicial, entradas dependentes, reset e pré-condições, ponto de observação, oráculo esperado e justificativa independente, timeout/condição de parada e estado final. Registrar ferramenta/versão, configuração e dependências. Distinguir configuração integral do que foi omitido. Se houve stubs, traps, valores de RAM/registradores forçados, relógio artificial, chamadas interceptadas ou periféricos substituídos, listar precisamente e limitar a conclusão.
+State the input and initial state, dependent inputs, reset and preconditions, observation point, expected oracle with independent justification, timeout or stopping condition, and final state. Record the tool and version, configuration, and dependencies. Distinguish the complete configuration from omitted elements. If the experiment used stubs, traps, forced RAM or register values, an artificial clock, intercepted calls, or substituted peripherals, list them precisely and limit the conclusion accordingly.
 
-Quando a bancada for parte da alegação, usar um controle de comportamento conhecido para mostrar que ela consegue observar o fenômeno relevante e casos contrastantes escolhidos para discriminar a hipótese. Considerar fronteiras, erro e alternativa plausível, conforme o contrato. O mínimo estrutural do auxiliar é um controle e dois casos com conteúdos de entrada diferentes; não é um cálculo do tamanho suficiente da amostra. Entradas diferentes podem percorrer o mesmo caminho ou reproduzir o mesmo erro.
+When the bench contributes to the claim, use a known-behaviour control to show that it can observe the relevant phenomenon, plus contrasting cases chosen to discriminate the hypothesis. Include boundaries, error conditions, and a plausible alternative as required by the contract. The helper's structural minimum is one control and two cases with different input content; it is not a calculation of sufficient sample size. Different inputs may exercise the same path or reproduce the same error.
 
-Não fazer o oráculo copiar a implementação ou preencher `observed` com `expected`. Observações devem vir da execução/revisão realmente realizada e apontar para logs preservados. Logs devem identificar contexto, resultado e parada suficientes para a análise. Um log vazio ou irrelevante não sustenta a conclusão, ainda que seu hash esteja correto. Controles adicionais que a missão exige continuam obrigatórios.
+Do not make the oracle copy the implementation or populate `observed` from `expected`. Observations must come from the execution or review that actually occurred and must reference preserved logs. Logs must identify enough context, outcome, and stopping information for analysis. An empty or irrelevant log does not support a conclusion even if its hash is correct. Any additional controls required by the mission remain mandatory.
 
-Depois de uma execução interrompida/desconectada, registrar o resultado como desconhecido até recuperar o trace/checkpoint. Não assumir sucesso pelo tempo transcorrido nem repetir operações com efeitos externos sem reconciliar o estado.
+After an interrupted or disconnected execution, record the outcome as unknown until the trace or checkpoint is recovered. Do not assume success from elapsed time or repeat externally consequential operations before reconciling state.
 
-## Contrato do auxiliar
+## Helper contract
 
-`target` confere bytes, hash, campos mínimos e mapa linear declarado. `unit` confere intervalo, alinhamento, conversão de endereço e hash dos bytes selecionados. Não decodificam instruções nem comprovam que o intervalo é uma função.
+`target` checks the bytes, hash, required fields, and declared linear map. `unit` checks range, alignment, address conversion, and the hash of the selected bytes. Neither command decodes instructions nor proves that a range is a function.
 
-`witnesses` confere os hashes do binário, unidade, manifestos, entradas e logs; exige IDs únicos, expectativas não vazias, controle, ao menos dois conjuntos distintos de conteúdo de entrada e declaração de injeções/limitações. Compara cada chave esperada ao valor observado, exigindo que a chave exista. `true`, `1` e `1.0` são distintos; usar tipos e representações estáveis. Tolerâncias numéricas exigem comparação separada apropriada, não editar a observação para fazê-la coincidir.
+`witnesses` checks hashes for the binary, unit, manifests, inputs, and logs. It requires unique identifiers, non-empty expectations, a control, at least two distinct input-content sets, and a declaration of injections and limitations. It compares each expected key with the observed value and requires the key to exist. `true`, `1`, and `1.0` are distinct; use stable types and representations. Numeric tolerances require a suitable separate comparison, not an edited observation.
 
-Campos extras observados não são interpretados como falha automaticamente; definir como expectativas as condições de erro relevantes, incluindo efeitos que devem estar ausentes. Comparações não provam que o produtor do JSON relatou honestamente o que ocorreu. `execution_reference` é uma referência textual, não autenticação. O tipo `hardware_observation` não transforma o auxiliar em validador de hardware.
+Additional observed fields are not automatically failures. Put relevant error conditions, including effects that must be absent, into the expectations. Comparisons do not prove that the JSON producer honestly reported what occurred. `execution_reference` is a textual reference, not authentication. The `hardware_observation` type does not turn the helper into a hardware validator.
 
-Os manifestos são normalizados em JSON UTF-8, chaves ordenadas, separadores compactos e sem NaN antes do hash. `unit` retorna `target_manifest_sha256` e `unit_manifest_sha256` para copiar ao relatório. Mudança de metadados também invalida esse vínculo conservador; isso exige revisão, não significa que os bytes ou o comportamento necessariamente mudaram. Duplicatas de chaves e números não finitos são recusados na CLI.
+Before hashing, manifests are normalised as UTF-8 JSON with sorted keys, compact separators, and no NaN values. `unit` returns `target_manifest_sha256` and `unit_manifest_sha256` for use in reports. Metadata changes also invalidate this conservative binding; they require review but do not necessarily mean the bytes or behaviour changed. The CLI rejects duplicate keys and non-finite numbers.
 
-Os caminhos internos devem resolver para arquivos dentro do projeto; traversal, caminhos absolutos, escapes por symlink e `.harness` são recusados. Isso não é isolamento contra um processo adversário trocando arquivos durante a leitura. Trabalhar sobre evidências congeladas e declarar todos os arquivos relevantes ao verificador adotado. Arquivos são lidos integralmente na memória; para imagens muito grandes preparar/verificar uma estratégia específica antes de usar o auxiliar, sem alterar silenciosamente o alvo.
+Internal paths must resolve to files inside the project. The helper rejects traversal, absolute paths, symlink escapes, and `.harness`. This is not isolation against an adversarial process replacing files during a read. Work with frozen evidence and declare all files relevant to the adopted verifier. Files are read fully into memory; for very large images, prepare and verify a specific strategy before using the helper rather than silently changing the target.
 
-## Auditoria de honestidade da conclusão
+## Honesty audit for the conclusion
 
-Informar alegação exata, método/ambiente realmente usados, arquivos/checks, cobertura/denominador, casos que falharam e o que falta testar. Uma frase aceitável: “os dois casos registrados coincidem com as expectativas sob as injeções descritas; integração e hardware não testados”. Evitar “algoritmo validado” quando só o relatório foi conferido. Preservar resultados negativos e permitir retratação, sem inventar uma certeza numérica.
+Report the exact claim, the method and environment actually used, files and checks, coverage and denominator, failed cases, and outstanding tests. An acceptable sentence is: “The two recorded cases match their expectations under the disclosed injections; integration and hardware were not tested.” Avoid “algorithm validated” when only the report was checked. Preserve negative results and permit retraction without inventing a numerical certainty score.

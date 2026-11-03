@@ -1,48 +1,48 @@
-# Uso da bancada Renode
+# Using the Renode bench
 
-## Preparação do alvo
+## Target preparation
 
-Antes de escrever a bancada, documente a origem e o SHA-256 do firmware. Confirme arquitetura, modo de instrução, endianness, mapa de memória, offset/endereço de carga, vetor de reset ou PC/SP iniciais e periféricos necessários. Se algum item não estiver comprovado, marque-o como hipótese e prepare um teste que possa refutá-lo.
+Before writing the bench, document the firmware's origin and SHA-256. Confirm the architecture, instruction mode, endianness, memory map, load offset or address, reset vector or initial PC/SP, and required peripherals. If an item is not established, label it as a hypothesis and prepare a test that can refute it.
 
-Use uma pasta própria para a bancada, separada dos binários originais. Mantenha `.resc`, `.repl`, logs, traces e relatório juntos. Evite caminhos absolutos em artefatos destinados a outras máquinas; injete caminhos reais numa cópia local ou use variáveis suportadas pelo seu fluxo.
+Use a dedicated bench directory separate from original binaries. Keep `.resc`, `.repl`, logs, traces, and reports together. Avoid absolute paths in artifacts intended for other machines; inject real paths into a local copy or use variables supported by your workflow.
 
-O arquivo `.repl` é parte da evidência. Um modelo de CPU correto com periféricos ausentes pode levar o firmware a loops, falhas seguras ou caminhos artificiais. Documente periféricos omitidos e comportamento esperado na ausência deles.
+The `.repl` file is part of the evidence. A correct CPU model with missing peripherals may send firmware into loops, safe failures, or artificial paths. Document omitted peripherals and expected behaviour in their absence.
 
-## Execução headless
+## Headless execution
 
-No Windows:
+On Windows:
 
 ```powershell
 $renode = 'C:\Program Files\Renode\bin\Renode.exe'
-& $renode --disable-gui --console 'C:\projeto\bench\boot-trace.resc'
+& $renode --disable-gui --console 'C:\project\bench\boot-trace.resc'
 ```
 
-Em outros sistemas, ajuste o caminho do executável. Verifique a versão com o mecanismo fornecido pela instalação antes de comparar resultados entre máquinas. Use timeout no processo externo para impedir uma bancada presa indefinidamente. Capture stdout/stderr e o código de saída; um timeout deixa o resultado da execução desconhecido até a reconciliação dos arquivos.
+On other systems, adjust the executable path. Use the installed version's supported mechanism to verify its version before comparing results across machines. Apply an external process timeout so a stalled bench cannot run indefinitely. Capture stdout, stderr, and the exit code. A timeout leaves the run outcome unknown until generated files are reconciled.
 
-Metadados `:name:` e `:description:` em `.resc` devem permanecer em uma linha. Comentários extensos usam `#`. Termine scripts headless com `quit`. Revise a sintaxe contra a documentação da versão instalada; APIs de monitor e tracing podem mudar.
+`:name:` and `:description:` metadata in `.resc` files must remain on one line. Use `#` for longer comments. End headless scripts with `quit`. Check syntax against the documentation for the installed version because monitor and tracing APIs may change.
 
-## Hooks e injeções
+## Hooks and injections
 
-Prefira primeiro uma execução sem hooks. Um hook pode observar, parar ou modificar o estado, mas cada alteração reduz o alcance da conclusão. Registre endereço, propósito, pré-condição, mudança de registrador/memória, condição de parada e justificativa.
+Prefer an initial run without hooks. A hook may observe, stop, or change state, but each change narrows the conclusion. Record its address, purpose, precondition, register or memory change, stopping condition, and justification.
 
-Não use hooks para atravessar uma fronteira de segurança que o usuário não autorizou. Quando um bypass autorizado for necessário para testar um componente posterior, coloque uma parada explícita antes de qualquer região fora do escopo e documente que o caminho foi forçado. O comportamento depois da injeção não representa o boot natural.
+Do not use hooks to cross a security boundary that the user has not authorised. When an authorised bypass is required to test a later component, place an explicit stop before any out-of-scope region and disclose that the path was forced. Behaviour after an injection does not represent natural boot behaviour.
 
-## Interpretação do trace
+## Trace interpretation
 
-O analisador agrupa transições próximas em blocos usando uma distância configurável. Isso é uma heurística de navegação, não um decodificador de instruções ou grafo de controle. Loops frequentes podem representar espera, erro, scheduler ou simples artefato do modelo. Um salto aparente pode ser fluxo normal, exceção ou problema de alinhamento/ISA.
+The analyser groups nearby transitions into blocks using a configurable distance. This is a navigation heuristic, not an instruction decoder or control-flow graph. Frequent loops may represent waiting, an error, a scheduler, or a model artifact. An apparent jump may be normal flow, an exception, or an alignment or ISA problem.
 
-Correlacione endereços com uma análise estática configurada para o mesmo binário, mapa e modo. Diferencie:
+Correlate addresses with static analysis configured for the same binary, map, and mode. Distinguish:
 
-- endereço observado;
-- instrução decodificada;
-- função ou limite candidato;
-- hipótese semântica;
-- comportamento confirmado por teste.
+- observed address;
+- decoded instruction;
+- candidate function or boundary;
+- semantic hypothesis;
+- behaviour confirmed by a test.
 
-Evite contabilizar o mesmo trace reformatado como evidência independente. Para comparar configurações, preserve os dois conjuntos, hashes, parâmetros e critérios previamente definidos.
+Do not count the same reformatted trace as independent evidence. When comparing configurations, preserve both datasets, their hashes and parameters, and the criteria selected in advance.
 
-## Integração com um harness longo
+## Integration with a long-running harness
 
-Em uma missão controlada, separe aquisição e validação. A execução do Renode pode gerar arquivos; o `check` deve ler artefatos congelados e verificar hashes, formato e expectativas. Não execute uma geração mutante dentro de um check que promete leitura estável.
+In a controlled mission, separate acquisition from validation. Renode execution may generate files; `check` should read frozen artifacts and verify hashes, format, and expectations. Do not perform mutable generation inside a check that promises stable, read-only evidence.
 
-Registre a evidência com teto de alegação: método emulado, plataforma, injeções, amostra, pontos observados e o que não foi testado. Relate cobertura com denominador definido. Se o inventário de caminhos for desconhecido, a cobertura total é indeterminada.
+Record the evidence with a claim ceiling: emulation method, platform, injections, sample, observation points, and what was not tested. Report coverage with a defined denominator. If the path inventory is unknown, overall coverage is indeterminate.
