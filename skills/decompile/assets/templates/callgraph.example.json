@@ -1,0 +1,15 @@
+{
+  "format": "decompile-callgraph-v1",
+  "_comment": "Synthetic example. Replace with your own export (e.g. a headless Ghidra ExportCalls or pyghidra-mcp adjacency). Keys are function identifiers; values are lists of callee identifiers. A callee that never appears as a key is treated as having no recorded callees.",
+  "graph": {
+    "fn_bind": [],
+    "fn_getA": [],
+    "fn_leafP": [],
+    "fn_leafQ": [],
+    "fn_undoneHelper": ["fn_leafQ"],
+    "fn_recon1": ["fn_bind", "fn_leafP"],
+    "fn_recon2": ["fn_bind"],
+    "fn_recon3": ["fn_undoneHelper"],
+    "fn_big": ["fn_bind", "fn_undoneHelper"]
+  }
+}
