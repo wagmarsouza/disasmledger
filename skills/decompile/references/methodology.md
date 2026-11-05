@@ -12,7 +12,8 @@ ways: the pipeline is what you do; the ladder is what a result is allowed to cla
 | **G1** | Raw: disassembly and control-flow only | Boundaries and instructions decoded; still only bytes |
 | **G2** | Semantics: a described model (roles, offsets, a descriptor) | A coherent reading exists — but understanding is **not** reconstruction |
 | **G3** | Compiles: source that reproduces the logic | The source **compiles** under the real toolchain, with layout `_Static_assert`s |
-| **G4** | Behaviour: bench-confirmed | Runs on the bench with **two witnesses on different branches/outputs** and a positive control |
+| **G4-stock** | Behaviour of the ORIGINAL characterised | Forced-invoke the original function on the bench; **two witnesses on different branches/outputs** and a positive control |
+| **G4-recon** | OUR reconstruction behaves as the original | Differential: recompile our C++, run OUR blob on the same bench, and it matches the stock witnesses (two discriminating witnesses, cold) |
 
 Optional rung **M (match)** sits between G3 and G4: the compiled output is diffed against
 the original instructions (objdiff/asm-differ) and, when functionally correct but not
@@ -26,6 +27,11 @@ Rules that keep the ladder honest:
   wrong model that still compiles. Never promote G3 to a behavioural claim.
 - Two witnesses are the structural minimum, not semantic sufficiency: they must exercise
   **different branches or outputs**, with a known positive control, or the bench proves nothing.
+- G4 has two readings and they prove different things. **G4-stock** forced-invokes the ORIGINAL
+  function and characterises what it does — it catches a *reading* error. **G4-recon** runs OUR
+  recompiled body against those same witnesses — it catches a *transcription* error, a model that
+  reads right but was rebuilt wrong. A reconstruction is behaviour-proven only at G4-recon;
+  G4-stock alone describes the stock, not our code.
 - Coverage is verified units over total inventoried units. Unknown total ⇒ indeterminate.
   Do not fabricate a "% understood" from names, line counts, or cycle counts.
 
@@ -54,7 +60,9 @@ compile is G2, not G3. This is the mechanical boundary that makes "G3 = compiles
 ### 5. Match and/or bench (→ M, → G4)
 For pure-logic units, diff the compiled bytes against the original (M). For units with state,
 peripherals, or control flow that bytes alone cannot settle, run the bench (renode-bench)
-cold forced-invoke with two discriminating witnesses and a positive control (→ G4). Record
+cold forced-invoke with two discriminating witnesses and a positive control. First characterise
+the stock (→ G4-stock), then **recompile our C++ and differential-test OUR blob against those
+witnesses** (→ G4-recon) — the step that proves the reconstruction, not just the original. Record
 inputs, initial state, injections, stubs, stopping condition, and failures; bound the claim to
 exactly what was exercised.
 

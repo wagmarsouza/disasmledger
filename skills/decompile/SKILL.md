@@ -3,7 +3,7 @@ name: decompile
 description: "DisasmLedger Decompile: an evidence-bound, end-to-end playbook for recompilation-grade decompilation and disassembly — a stage pipeline, tool-per-stage routing, an explicit grade ladder, and differential-test scheduling that composes the binary-analysis-profile and renode-bench skills."
 metadata:
   display-name: DisasmLedger Decompile
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # DisasmLedger Decompile

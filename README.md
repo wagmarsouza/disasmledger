@@ -56,6 +56,12 @@ python -B .\skills\renode-bench\scripts\analyze_trace.py 'C:\your-project\bench\
 
 The trace analyser is read-only. Program-counter frequency helps select regions for investigation; emulation does not validate real hardware.
 
+To verify a *reconstruction* rather than characterise the original, the skill also ships `scripts/differential.py`: it recompiles a candidate C++ body to a position-independent Thumb blob, loads it into RAM, forced-invokes it on the same bench, and checks the outputs against the stock witnesses under the two-witness discipline. Execution is a pluggable `invoke`, so the same harness drives a Renode forced-invoke engine or a Unicorn runner; it pairs with the `decompile` scheduler (`closure.py` schedules, `differential.py` proves). The offline self-check needs no bench and no cross-toolchain:
+
+```powershell
+python -B .\skills\renode-bench\scripts\differential.py --selftest
+```
+
 ## Decompile
 
 Read [the skill](skills/decompile/SKILL.md) and the references in `skills/decompile/references/` (methodology, toolchain routing, and differential testing). It is an orchestrator: it does not disassemble, execute, or grade anything itself. It sets out a grade ladder (G0 bogus, G1 raw, G2 semantics, G3 compiles, G4 bench-confirmed), routes each stage to the right tool, and composes `binary-analysis-profile` and `renode-bench` for the evidence steps.

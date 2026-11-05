@@ -49,10 +49,46 @@ It does not disassemble, execute, grade, or promote. It is a scheduler: it tells
 worth testing next and why*, not whether anything is correct. The grades it reads come from the
 gates (compile, match, bench); the graph comes from the call-graph backend.
 
+A static call graph (from BL/BLX immediates) misses **indirect** dispatch edges — vtable and
+jump-table calls whose target is computed. Those unseen edges make the closure look *more* closed
+than it is, so `testable_now` and the FT counts are an optimistic upper bound: a unit reached
+mainly through dispatch into not-done code can appear ready when it is not. Confirm the closure by
+hand for any unit whose callers or callees are dominated by indirect dispatch, and prefer a graph
+backend that recovers dispatch edges when one is available.
+
+## The recompile-and-bench executor (G4-recon)
+
+The closure report says *which* unit to test; the executor is *how* you test it. It turns the
+reconstruction's own behaviour into evidence, which is stronger than characterising the stock:
+
+1. **Compile our C++ body** to a position-independent Thumb `.text` blob (the real cross-toolchain,
+   the target's `-mcpu`).
+2. **Load the blob into RAM** at a base address and **forced-invoke it** on the same bench the stock
+   was measured on — call the function directly rather than driving the whole UI.
+3. **Compare our outputs to the stock witnesses** already established for that function, under the
+   two-witness discipline: at least two witnesses on different branches/outputs, plus a clean return.
+4. A match is **G4-recon** (our transcription reproduces the original); a mismatch means the C++ is
+   wrong — fix it, do not promote (R80).
+
+This is emulator-agnostic. Route a **pure-logic leaf** to Unicorn (CPU-only, fast, no peripherals);
+route a unit bound to **peripherals or an active boot/therapy context** to Renode. The
+[renode-bench](../../renode-bench/SKILL.md) skill ships `scripts/differential.py`, which owns the
+generic parts (compile the blob, lay it in RAM, compare under the discipline) and takes your bench
+`invoke` as a plug-in, so the same harness serves either emulator.
+
+**Position-independence limit (honest bound).** Running our body in RAM only proves the stock when
+the blob is position-independent: a leaf with no absolute literal-pool reference and no BL/BLX to an
+address not loaded in the same space. For a caller, load its callees too — or a stub already proven
+equivalent — at their own addresses, or the invoke jumps into emptiness and the "match" is
+meaningless. This is why classification (leaf / caller / dispatch) precedes the test, and why the
+closure schedule prefers units whose callee-closure is already G4.
+
 ## Honest limits
 
 A differential/bench result proves the reconstruction matches the original **on the witnessed
 inputs/branches, cold**. It does not prove un-witnessed paths, nor behaviour under full
 boot/therapy state (which may be HW-gated). A G3-closed closure links and runs, but a mismatch
 could lie in a G3 callee; a **G4-closed** closure (callees bench-proven) localizes the fault to
-`f` — prefer it when choosing what to certify.
+`f` — prefer it when choosing what to certify. And because the static graph omits indirect edges
+(above), a closure certified only from it is a hypothesis until the dispatch paths are accounted
+for by hand.
