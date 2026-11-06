@@ -1,5 +1,7 @@
 # DisasmLedger
 
+[![skills.sh](https://skills.sh/b/wagmarsouza/disasmledger)](https://skills.sh/wagmarsouza/disasmledger)
+
 ![DisasmLedger: bytes and traces backed by evidence](assets/disasmledger-logo.png)
 
 Skills for traceable binary analysis and firmware test benches. The project contains three independent skills: `binary-analysis-profile` organises target identity, address maps, analysis units, and witnesses; `renode-bench` guides the creation of a Renode bench and the interpretation of program-counter traces; `decompile` orchestrates a staged, grade-gated reconstruction workflow over the other two and schedules work by call-graph closure. They can be used separately or together.
@@ -13,6 +15,10 @@ npx skills add wagmarsouza/disasmledger --skill binary-analysis-profile
 npx skills add wagmarsouza/disasmledger --skill renode-bench
 npx skills add wagmarsouza/disasmledger --skill decompile
 ```
+
+For the complete reconstruction workflow, install all three skills above. A single-skill install does not automatically install sibling skills or external tools. See the [Decompile guide](docs/decompile.md) for commands, the grade ladder, dependencies, and known limitations of version 0.2.0.
+
+Catalog pages: [Binary Analysis Profile](https://skills.sh/wagmarsouza/disasmledger/binary-analysis-profile), [Renode Bench](https://skills.sh/wagmarsouza/disasmledger/renode-bench), and [Decompile](https://skills.sh/wagmarsouza/disasmledger/decompile).
 
 To clone the repository and use the scripts without an agent:
 
@@ -74,7 +80,7 @@ $p = 'C:\your-project'
 python -B $c --project $p report --callgraph "$p\analysis\callgraph.json" --grades "$p\analysis\grades.json"
 ```
 
-It never establishes semantic truth or promotes a grade; `semantic_truth_verified` and `promotion_authorized` are always false. The [synthetic pilot](skills/decompile/examples/run_pilot.py) verifies the scheduling arithmetic without real firmware:
+It never establishes semantic truth or promotes a grade; `semantic_truth_verified` and `promotion_authorized` are always false. Read the [documented scheduler limitations](docs/decompile.md#known-limitations-in-decompile-020) before using its counts or readiness suggestions. The [synthetic pilot](skills/decompile/examples/run_pilot.py) verifies the scheduling arithmetic without real firmware:
 
 ```powershell
 python -B skills/decompile/examples/run_pilot.py

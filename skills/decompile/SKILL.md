@@ -44,6 +44,10 @@ Copy [callgraph.example.json](assets/templates/callgraph.example.json) and [grad
 
 Deliver every reconstruction with a bounded claim, its grade, the gate that passed, the evidence, the coverage denominator, contradictions, and the next step. Preserve original binaries.
 
+## Scheduler limitations in 0.2.0
+
+Review `testable_now` manually. The helper accepts a single generic `G4` label and does not distinguish G4-stock from G4-recon; preserve that distinction in the evidence records. Its totals include G0 candidates and grade entries outside the graph. Missing callee adjacency is treated as empty, and unrecorded indirect calls can make closure optimistic. Reconcile the live inventory and graph completeness independently. Grades are declarations: the helper does not validate their evidence or propagate retractions. Neither G3 nor G4 closure establishes linkability, ABI correctness, state equivalence, or exclusive fault localisation. See the [publication guide](https://github.com/wagmarsouza/disasmledger/blob/main/docs/decompile.md) for details.
+
 ## Package verification
 
 ```powershell
