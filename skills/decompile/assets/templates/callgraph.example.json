@@ -1,6 +1,8 @@
 {
   "format": "decompile-callgraph-v1",
-  "_comment": "Synthetic example. Replace with your own export (e.g. a headless Ghidra ExportCalls or pyghidra-mcp adjacency). Keys are function identifiers; values are lists of callee identifiers. A callee that never appears as a key is treated as having no recorded callees.",
+  "_comment": "Synthetic complete inventory. For a real export declare inventory_complete only after review. Use null for unknown adjacency and unknown_calls for unresolved indirect calls. An omitted callee entry is unknown, never a leaf.",
+  "inventory_complete": true,
+  "unknown_calls": [],
   "graph": {
     "fn_bind": [],
     "fn_getA": [],

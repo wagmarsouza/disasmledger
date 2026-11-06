@@ -1,11 +1,11 @@
 {
   "format": "decompile-grades-v1",
-  "_comment": "Synthetic example. Replace with grades produced by the gates (compile, match, bench). G0 bogus, G1 raw, G2 semantics, G3 compiles, G4 bench-confirmed. 'Done' means G3 or G4. A function absent from this map is treated as ungraded (indeterminate).",
+  "_comment": "Synthetic declared grades, not evidence verified by this helper. G0 excluded, G1 raw, G2 hypothesis, G3 compiles, G4-stock original observed, G4-recon reconstruction compared. Legacy G4 is ambiguous and blocks reconstruction closure. Retain actual gate evidence separately.",
   "grades": {
-    "fn_bind": "G4",
+    "fn_bind": "G4-recon",
     "fn_getA": "G3",
-    "fn_leafP": "G4",
-    "fn_leafQ": "G4",
+    "fn_leafP": "G4-recon",
+    "fn_leafQ": "G4-recon",
     "fn_undoneHelper": "G2",
     "fn_recon1": "G1",
     "fn_recon2": "G2",

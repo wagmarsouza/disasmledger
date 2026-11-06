@@ -16,7 +16,7 @@ npx skills add wagmarsouza/disasmledger --skill renode-bench
 npx skills add wagmarsouza/disasmledger --skill decompile
 ```
 
-For the complete reconstruction workflow, install all three skills above. A single-skill install does not automatically install sibling skills or external tools. See the [Decompile guide](docs/decompile.md) for commands, the grade ladder, dependencies, and known limitations of version 0.2.0.
+For the complete reconstruction workflow, install all three skills above. A single-skill install does not automatically install sibling skills or external tools. See the [Decompile guide](docs/decompile.md) for commands, the grade ladder, dependencies, and migration to version 0.3.0.
 
 Catalog pages: [Binary Analysis Profile](https://skills.sh/wagmarsouza/disasmledger/binary-analysis-profile), [Renode Bench](https://skills.sh/wagmarsouza/disasmledger/renode-bench), and [Decompile](https://skills.sh/wagmarsouza/disasmledger/decompile).
 
@@ -70,7 +70,7 @@ python -B .\skills\renode-bench\scripts\differential.py --selftest
 
 ## Decompile
 
-Read [the skill](skills/decompile/SKILL.md) and the references in `skills/decompile/references/` (methodology, toolchain routing, and differential testing). It is an orchestrator: it does not disassemble, execute, or grade anything itself. It sets out a grade ladder (G0 bogus, G1 raw, G2 semantics, G3 compiles, G4 bench-confirmed), routes each stage to the right tool, and composes `binary-analysis-profile` and `renode-bench` for the evidence steps.
+Read [the skill](skills/decompile/SKILL.md) and the references in `skills/decompile/references/` (methodology, toolchain routing, and differential testing). It is an orchestrator: it does not disassemble, execute, or grade anything itself. It distinguishes G0 discarded, G1 raw, G2 semantic hypothesis, G3 compiles, G4-stock original observations, and G4-recon reconstruction comparisons, and composes `binary-analysis-profile` and `renode-bench` for the evidence steps.
 
 The only executable helper is a read-only scheduler. It consumes a declared call graph and a declared grade map — produced by your own tools, in the formats shown in `skills/decompile/assets/templates/` — and reports which units are differentially testable now (their callee-closure is already reconstructed) and which undone helpers carry the most leverage:
 
@@ -80,7 +80,7 @@ $p = 'C:\your-project'
 python -B $c --project $p report --callgraph "$p\analysis\callgraph.json" --grades "$p\analysis\grades.json"
 ```
 
-It never establishes semantic truth or promotes a grade; `semantic_truth_verified` and `promotion_authorized` are always false. Read the [documented scheduler limitations](docs/decompile.md#known-limitations-in-decompile-020) before using its counts or readiness suggestions. The [synthetic pilot](skills/decompile/examples/run_pilot.py) verifies the scheduling arithmetic without real firmware:
+It never establishes semantic truth or promotes a grade; `evidence_verified`, `semantic_truth_verified`, and `promotion_authorized` are always false. Report-v2 separates original and reconstruction grades, excludes G0 from live counts, and blocks unknown dependencies. Read the [migration guide and evidence boundaries](docs/decompile.md#migration-from-020-to-030) before using its counts or readiness suggestions. The [synthetic pilot](skills/decompile/examples/run_pilot.py) verifies the scheduling arithmetic without real firmware:
 
 ```powershell
 python -B skills/decompile/examples/run_pilot.py

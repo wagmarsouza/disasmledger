@@ -17,9 +17,10 @@ if the high-fan-in infrastructure was reconstructed first.
 
 ## Criteria — test unit `f` for acceleration when all hold
 
-- **C1 — closure (required).** The transitive closure of `f`'s callees is already G3+ (ideally
-  G4). Otherwise the test runs against stubs/unknowns and measures your own assumptions —
-  zero information.
+- **C1 — closure (required for this scheduling policy).** Transitive callees must be declared
+  G3 or G4-recon (prefer G4-recon). Unknown adjacency and unresolved indirect calls block closure.
+  Tests with controlled stubs can still teach local facts, but must disclose their assumptions
+  and cannot establish integrated reconstruction equivalence.
 - **C2 — leverage (priority).** Order by fan-in: proving a helper propagates a prior to its
   callers. A helper with fan-in 100–1000 is a jackpot; a fan-0/fan-out-0 leaf is certification
   only. Attack threshold: fan-in ≥ ~30 at the start (the top helpers), then ≥ ~3 once a
@@ -34,20 +35,24 @@ Selection, in short: test `f` ⟺ `C1 ∧ C3 ∧ (fanin(f) ≥ K ∨ hypothesis(
 ## Using `closure.py`
 
 `closure.py` consumes a declared call graph (`{fn: [callees]}`) and a declared grade map
-(`{fn: "G0".."G4"}`) and reports, read-only:
+(`{fn: "G0"|"G1"|"G2"|"G3"|"G4-stock"|"G4-recon"}`) and reports, read-only:
 
 - **testable_now** — not-done units whose callee-closure is complete (C1 satisfied): the units
   you can differentially test immediately as you reconstruct them.
 - **top_leverage** — undone helpers ranked by number of distinct undone callers (C2): where a
   single reconstruction propagates furthest.
-- **ft_g3_closed / ft_g4_closed** — counts of units whose closure is fully G3+ / fully G4; the
-  G4-closed set localizes a mismatch to the unit itself (callees already proven).
-- **totals / coverage flags** — done over inventoried, plus an indeterminate flag when any
-  callee is ungraded. Cycles among undone units resolve to "not closed", never an infinite loop.
+- **ft_g3_closed / ft_g4_closed** — live units whose callees are declared G3-or-G4-recon /
+  G4-recon respectively. These measure callee closure, excluding the unit's own grade; even an
+  ungraded leaf has empty callee closure. They are not verification counts.
+- **totals / coverage flags** — G0 is excluded from live counts. Out-of-graph grade identifiers
+  are rejected. Missing grades, unknown calls/adjacency, ambiguous legacy G4, or absent inventory
+  completeness keep coverage indeterminate. Cycles conservatively remain not closed.
 
 It does not disassemble, execute, grade, or promote. It is a scheduler: it tells you *what is
-worth testing next and why*, not whether anything is correct. The grades it reads come from the
-gates (compile, match, bench); the graph comes from the call-graph backend.
+worth testing next and why*, not whether anything is correct. Grades must be recorded from
+the gates; the helper does not verify those records. The graph comes from the call-graph backend.
+Legacy G4 is accepted for inspection but blocks reconstruction closure. Report format is
+`decompile-closure-report-v2`; `evidence_verified` stays false.
 
 A static call graph (from BL/BLX immediates) misses **indirect** dispatch edges — vtable and
 jump-table calls whose target is computed. Those unseen edges make the closure look *more* closed
@@ -67,8 +72,9 @@ reconstruction's own behaviour into evidence, which is stronger than characteris
    was measured on — call the function directly rather than driving the whole UI.
 3. **Compare our outputs to the stock witnesses** already established for that function, under the
    two-witness discipline: at least two witnesses on different branches/outputs, plus a clean return.
-4. A match is **G4-recon** (our transcription reproduces the original); a mismatch means the C++ is
-   wrong — fix it, do not promote (R80).
+4. A match supports **G4-recon** within the witnessed scope after evidence review. A mismatch
+   blocks promotion: investigate source, ABI, dependencies, initial state, and bench setup before
+   assigning the cause to C++ (R80).
 
 This is emulator-agnostic. Route a **pure-logic leaf** to Unicorn (CPU-only, fast, no peripherals);
 route a unit bound to **peripherals or an active boot/therapy context** to Renode. The
@@ -87,8 +93,7 @@ closure schedule prefers units whose callee-closure is already G4.
 
 A differential/bench result proves the reconstruction matches the original **on the witnessed
 inputs/branches, cold**. It does not prove un-witnessed paths, nor behaviour under full
-boot/therapy state (which may be HW-gated). A G3-closed closure links and runs, but a mismatch
-could lie in a G3 callee; a **G4-closed** closure (callees bench-proven) localizes the fault to
-`f` — prefer it when choosing what to certify. And because the static graph omits indirect edges
-(above), a closure certified only from it is a hypothesis until the dispatch paths are accounted
-for by hand.
+boot/therapy state (which may be HW-gated). G3 closure does not establish linking or execution.
+G4-recon closure reduces some uncertainty, but ABI, shared state, layout, and bench setup may
+still cause mismatches. Static graphs can omit indirect edges: record unresolved dispatch in
+`unknown_calls` and review completeness before relying on readiness suggestions.

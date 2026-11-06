@@ -3,7 +3,7 @@ name: decompile
 description: "DisasmLedger Decompile: an evidence-bound, end-to-end playbook for recompilation-grade decompilation and disassembly — a stage pipeline, tool-per-stage routing, an explicit grade ladder, and differential-test scheduling that composes the binary-analysis-profile and renode-bench skills."
 metadata:
   display-name: DisasmLedger Decompile
-  version: "0.2.0"
+  version: "0.3.0"
 ---
 
 # DisasmLedger Decompile
@@ -44,9 +44,11 @@ Copy [callgraph.example.json](assets/templates/callgraph.example.json) and [grad
 
 Deliver every reconstruction with a bounded claim, its grade, the gate that passed, the evidence, the coverage denominator, contradictions, and the next step. Preserve original binaries.
 
-## Scheduler limitations in 0.2.0
+## Scheduler contract in 0.3.0
 
-Review `testable_now` manually. The helper accepts a single generic `G4` label and does not distinguish G4-stock from G4-recon; preserve that distinction in the evidence records. Its totals include G0 candidates and grade entries outside the graph. Missing callee adjacency is treated as empty, and unrecorded indirect calls can make closure optimistic. Reconcile the live inventory and graph completeness independently. Grades are declarations: the helper does not validate their evidence or propagate retractions. Neither G3 nor G4 closure establishes linkability, ABI correctness, state equivalence, or exclusive fault localisation. See the [publication guide](https://github.com/wagmarsouza/disasmledger/blob/main/docs/decompile.md) for details.
+Only `G3` and `G4-recon` count as reconstructed dependencies. `G4-stock` characterises the original; legacy `G4` is ambiguous and blocks reconstruction closure. G0 is excluded from live totals and queues; grade identifiers outside the graph are rejected. Missing adjacency or `null` blocks closure; list unresolved indirect calls in `unknown_calls`. Declare `inventory_complete: true` only after inventory review; omission means indeterminate coverage. Relative CLI inputs resolve under `--project`.
+
+Report format is `decompile-closure-report-v2`. Grades are declarations; `evidence_verified`, `semantic_truth_verified`, and `promotion_authorized` remain false. Downgrading a callee blocks dependent closure on the next report. Retractions in external records remain the operator's responsibility. Neither G3 nor G4-recon closure establishes linkability, ABI correctness, state equivalence, or exclusive fault localisation. Review `testable_now` manually. See the [publication guide](https://github.com/wagmarsouza/disasmledger/blob/main/docs/decompile.md) for migration details.
 
 ## Package verification
 

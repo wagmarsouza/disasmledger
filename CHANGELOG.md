@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.0.0 — 2026-11-06
+
+- Decompile 0.3.0 distinguishes G4-stock from G4-recon; ambiguous legacy G4 blocks reconstruction closure rather than proving equivalence.
+- Report format changes to decompile-closure-report-v2: live counts exclude G0 and separate stock/reconstruction grades; out-of-graph grade identifiers are rejected.
+- Missing/null adjacency and declared unknown indirect calls block closure; coverage requires an explicit inventory-completeness declaration and reports uncertainty.
+- Iterative closure supports deep graphs and conservatively unresolved cycles; malformed grade values and library limits receive structured errors.
+- Relative graph/grade inputs now resolve under --project. Updated templates, pilot, migration guide, and 19 regression tests.
+- Grades and evidence verification remain explicitly distinct. No automatic promotion, provenance verification, or universal equivalence is claimed.
+
 ## v1.1.0 — 2026-11-06
 
 - Added a third skill, `decompile`: an orchestrator that composes `binary-analysis-profile` and `renode-bench` into a staged, grade-gated reconstruction workflow (G0 bogus → G1 raw → G2 semantics → G3 compiles → G4 bench-confirmed), with references for methodology, toolchain routing per stage, and differential testing.

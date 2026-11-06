@@ -6,12 +6,12 @@ testable now (their transitive callees are already reconstructed) and which undo
 carry the most leverage. Nothing here establishes semantic truth or promotes a grade.
 """
 import argparse
+from collections import deque
 import json
 from pathlib import Path
 import sys
 
-GRADES = {'G0': 0, 'G1': 1, 'G2': 2, 'G3': 3, 'G4': 4}
-DONE_MIN = GRADES['G3']  # "done" = compiles or bench-confirmed (G3+)
+GRADES = {'G0', 'G1', 'G2', 'G3', 'G4-stock', 'G4-recon', 'G4'}
 
 
 class ClosureError(ValueError):
@@ -58,69 +58,82 @@ def normalize(callgraph, grades):
     edges = {}
     for fn, callees in graph.items():
         require(text(fn), 'GRAPH', 'Function identifiers must be non-empty strings')
-        require(isinstance(callees, list), 'GRAPH', 'Callees must be a list')
+        require(callees is None or isinstance(callees, list), 'GRAPH',
+                'Callees must be a list or null for unknown adjacency')
         out = []
-        for callee in callees:
+        for callee in callees or []:
             require(text(callee), 'GRAPH', 'Callee identifiers must be non-empty strings')
             out.append(callee)
             nodes.add(callee)
-        edges[fn] = out
+        edges[fn] = sorted(set(out)) if callees is not None else None
         nodes.add(fn)
     for fn in nodes:
-        edges.setdefault(fn, [])
+        edges.setdefault(fn, None)
+
+    unknown_calls = callgraph.get('unknown_calls', [])
+    require(isinstance(unknown_calls, list) and all(text(fn) for fn in unknown_calls),
+            'GRAPH', 'unknown_calls must be a list of function identifiers')
+    require(set(unknown_calls) <= nodes, 'GRAPH', 'unknown_calls identifiers must exist in graph')
+    inventory_complete = callgraph.get('inventory_complete', False)
+    require(type(inventory_complete) is bool, 'GRAPH', 'inventory_complete must be boolean')
+    unknown = {fn for fn in nodes if edges[fn] is None} | set(unknown_calls)
 
     grade = {}
     for fn, value in grademap.items():
         require(text(fn), 'GRADES', 'Graded identifiers must be non-empty strings')
-        require(value in GRADES, 'GRADES', 'Grade must be one of G0, G1, G2, G3, G4')
+        require(isinstance(value, str) and value in GRADES, 'GRADES',
+                'Expected G0, G1, G2, G3, G4-stock, G4-recon, or legacy G4')
+        require(fn in nodes, 'GRADES', 'Graded identifier absent from graph: ' + fn)
         grade[fn] = value
-    return nodes, edges, grade
+    return nodes, edges, grade, unknown, inventory_complete
 
 
 def is_done(fn, grade):
-    value = grade.get(fn)
-    return value is not None and GRADES[value] >= DONE_MIN
+    return grade.get(fn) in {'G3', 'G4-recon'}
 
 
 def is_proven(fn, grade):
-    return grade.get(fn) == 'G4'
+    return grade.get(fn) == 'G4-recon'
 
 
-def closure_flags(nodes, edges, grade):
-    """ft3[fn]: the transitive callee-closure of fn is fully G3+ (links and runs without stub).
-    ft4[fn]: the transitive callee-closure is fully G4 (every callee bench-confirmed).
-    A cycle whose closure is not yet established resolves to False; never loops forever.
-    fn's own grade is not part of its callee-closure."""
-    ft3, ft4 = {}, {}
+def closure_flags(nodes, edges, grade, unknown):
+    """Declared callee closure only, without validating compile/bench evidence.
 
-    def visit(fn, want_proven, stack):
-        cache = ft4 if want_proven else ft3
-        if fn in cache:
-            return cache[fn]
-        if fn in stack:
-            return False
-        stack = stack | {fn}
-        ok = True
-        for callee in edges.get(fn, ()):
-            callee_done = is_proven(callee, grade) if want_proven else is_done(callee, grade)
-            if not callee_done or not visit(callee, want_proven, stack):
-                ok = False
-                break
-        cache[fn] = ok
-        return ok
+    Unknown adjacency/indirect calls and unresolved cycles remain closed=False.
+    A node's own grade is not part of its callee closure. Iterative O(V+E).
+    """
+    parents = {fn: [] for fn in nodes}
+    for caller in nodes:
+        for callee in edges[caller] or []:
+            parents[callee].append(caller)
 
-    for fn in nodes:
-        visit(fn, False, set())
-        visit(fn, True, set())
-    return ft3, ft4
+    def calculate(eligible):
+        remaining = {fn: len(edges[fn] or []) for fn in nodes}
+        closed = {fn: False for fn in nodes}
+        queue = deque(fn for fn in nodes if not remaining[fn] and fn not in unknown)
+        while queue:
+            fn = queue.popleft()
+            closed[fn] = True
+            if not eligible(fn, grade):
+                continue
+            for parent in parents[fn]:
+                remaining[parent] -= 1
+                if remaining[parent] == 0 and parent not in unknown:
+                    queue.append(parent)
+        return closed
+
+    return calculate(is_done), calculate(is_proven)
 
 
 def build_report(callgraph, grades, limit=50):
-    nodes, edges, grade = normalize(callgraph, grades)
-    ft3, ft4 = closure_flags(nodes, edges, grade)
+    require(type(limit) is int and limit >= 0, 'INPUT', 'limit must be a non-negative integer')
+    nodes, edges, grade, unknown, inventory_complete = normalize(callgraph, grades)
+    ft3, ft4 = closure_flags(nodes, edges, grade, unknown)
+    live = {fn for fn in nodes if grade.get(fn) != 'G0'}
+    ambiguous = sorted(fn for fn in live if grade.get(fn) == 'G4')
 
-    undone = {fn for fn in nodes if not is_done(fn, grade)}
-    ungraded = sorted(fn for fn in nodes if fn not in grade)
+    undone = {fn for fn in live if not is_done(fn, grade)}
+    ungraded = sorted(fn for fn in live if fn not in grade)
 
     # testable_now: undone units whose callee-closure is already complete (criterion C1).
     testable_now = sorted(fn for fn in undone if ft3.get(fn))
@@ -129,7 +142,7 @@ def build_report(callgraph, grades, limit=50):
     undone_callers = {fn: set() for fn in nodes}
     for caller, callees in edges.items():
         if caller in undone:
-            for callee in callees:
+            for callee in callees or []:
                 undone_callers[callee].add(caller)
     leverage = sorted(
         ({'id': fn, 'undone_callers': len(undone_callers[fn]), 'grade': grade.get(fn, 'ungraded'),
@@ -139,22 +152,31 @@ def build_report(callgraph, grades, limit=50):
 
     return {
         'passed': True,
-        'format': 'decompile-closure-report-v1',
+        'format': 'decompile-closure-report-v2',
         'totals': {
-            'nodes': len(nodes),
-            'graded': len(grade),
+            'nodes': len(live),
+            'inventoried_nodes': len(nodes),
+            'excluded_g0': len(nodes - live),
+            'graded': sum(fn in grade for fn in live),
             'ungraded': len(ungraded),
-            'done_g3_plus': sum(1 for fn in nodes if is_done(fn, grade)),
-            'proven_g4': sum(1 for fn in nodes if is_proven(fn, grade)),
+            'done_g3_plus': sum(1 for fn in live if is_done(fn, grade)),
+            'stock_g4': sum(grade.get(fn) == 'G4-stock' for fn in live),
+            'recon_g4': sum(is_proven(fn, grade) for fn in live),
             'undone': len(undone),
         },
-        'ft_g3_closed': sum(1 for fn in nodes if ft3.get(fn)),
-        'ft_g4_closed': sum(1 for fn in nodes if ft4.get(fn)),
+        'ft_g3_closed': sum(1 for fn in live if ft3.get(fn)),
+        'ft_g4_closed': sum(1 for fn in live if ft4.get(fn)),
         'testable_now_count': len(testable_now),
         'testable_now': testable_now[:limit],
         'top_leverage': leverage[:limit],
         'ungraded_sample': ungraded[:limit],
-        'coverage_indeterminate': bool(ungraded),
+        'unknown_dependencies': sorted(unknown & live),
+        'legacy_g4_ambiguous': ambiguous,
+        'inventory_complete_declared': inventory_complete,
+        'coverage_applicable': bool(live),
+        'coverage_indeterminate': bool(ungraded or unknown & live or ambiguous or not inventory_complete),
+        'grades_are_declared': True,
+        'evidence_verified': False,
         'scope': 'Scheduling aid over declared graph and grades only; no decode, execution, grading, or promotion',
         'semantic_truth_verified': False,
         'promotion_authorized': False,
@@ -174,7 +196,11 @@ def main():
         root = Path(args.project).resolve()
         require(root.is_dir(), 'PATH', 'Project root is missing')
         require(args.limit >= 0, 'INPUT', 'limit must be non-negative')
-        result = build_report(load_json(args.callgraph), load_json(args.grades), args.limit)
+        graph_path = Path(args.callgraph)
+        grade_path = Path(args.grades)
+        result = build_report(load_json(graph_path if graph_path.is_absolute() else root / graph_path),
+                              load_json(grade_path if grade_path.is_absolute() else root / grade_path),
+                              args.limit)
         print(json.dumps({'ok': True, 'result': result}, ensure_ascii=True))
         return 0 if result['passed'] else 3
     except (ClosureError, OSError, ValueError, RecursionError) as error:

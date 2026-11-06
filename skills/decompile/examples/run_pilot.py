@@ -17,7 +17,7 @@ spec.loader.exec_module(closure)
 
 
 def main():
-    callgraph = {'format': 'decompile-callgraph-v1', 'graph': {
+    callgraph = {'format': 'decompile-callgraph-v1', 'inventory_complete': True, 'graph': {
         'fn_bind': [], 'fn_leafP': [], 'fn_leafQ': [],
         'fn_undoneHelper': ['fn_leafQ'],
         'fn_recon1': ['fn_bind', 'fn_leafP'],
@@ -25,7 +25,7 @@ def main():
         'fn_big': ['fn_bind', 'fn_undoneHelper'],
     }}
     grades = {'format': 'decompile-grades-v1', 'grades': {
-        'fn_bind': 'G4', 'fn_leafP': 'G4', 'fn_leafQ': 'G4',
+        'fn_bind': 'G4-recon', 'fn_leafP': 'G4-recon', 'fn_leafQ': 'G4-recon',
         'fn_undoneHelper': 'G2', 'fn_recon1': 'G1', 'fn_recon3': 'G1', 'fn_big': 'G1',
     }}
 

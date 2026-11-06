@@ -1,6 +1,6 @@
 # DisasmLedger Decompile
 
-Decompile 0.2.0 orchestrates an evidence-bound reconstruction workflow with Binary Analysis Profile and Renode Bench. It routes identity, inventory, type modelling, transcription, compilation, matching, and differential testing to appropriate external tools. The bundled executable is a read-only scheduling helper.
+Decompile 0.3.0 orchestrates an evidence-bound reconstruction workflow with Binary Analysis Profile and Renode Bench. It routes identity, inventory, type modelling, transcription, compilation, matching, and differential testing to appropriate external tools. The bundled executable is a read-only scheduling helper.
 
 ## Install and invoke
 
@@ -50,20 +50,29 @@ $project = 'PATH_TO_ANALYSIS_PROJECT'
 python -B $scheduler --project $project report --callgraph "$project/analysis/callgraph.json" --grades "$project/analysis/grades.json" --limit 50
 ```
 
-Exit 0 means the scheduling report was produced; exit 2 means input was rejected. `passed` in this report concerns scheduling input processing. It does not certify a reconstruction. Explicit absolute input paths avoid ambiguity: relative graph/grade paths are resolved against the process working directory in this version.
+Exit 0 means the scheduling report was produced; exit 2 means input was rejected. `passed` concerns scheduling input processing. It does not certify a reconstruction. Relative graph/grade input paths are resolved under `--project`; explicit absolute paths are also supported.
 
-## Known limitations in decompile 0.2.0
+## Migration from 0.2.0 to 0.3.0
 
-This release publishes the supplied implementation. The following limitations were identified by inspection and targeted checks:
+The input format markers remain `decompile-callgraph-v1` and `decompile-grades-v1`. Output changes to `decompile-closure-report-v2` because the interpretation of counts and G4 changes. Update consumers of report-v1 explicitly.
 
-- The methodology distinguishes G4-stock and G4-recon, but the scheduler accepts only G0, G1, G2, G3, and G4. It cannot express that distinction. Keep both evidence types in the project records and do not interpret generic G4 as proof of reconstructed behaviour.
-- G0 units remain in scheduler node and pending counts and can appear as testable. Its counts therefore do not implement the methodology's exclusion of discarded candidates from the live denominator.
-- Grade-map identifiers absent from the graph still increase `graded`. Reconcile identifiers before interpreting totals; this count can exceed the graph node count.
-- A callee without its own adjacency entry is treated as having no recorded callees. Unknown or indirect dependencies can make readiness optimistic. Review graph completeness separately; `coverage_indeterminate: false` only indicates all represented nodes have grades.
-- Grades are supplied declarations. The helper does not inspect compile logs, witness provenance, hashes, retractions, or freshness. It does not automatically propagate retractions through external records.
-- A G3 closure does not prove linkability, ABI compatibility, or successful execution. Even a G4 closure does not isolate every mismatch to the current function: integration, shared state, memory layout, and bench configuration also matter.
+- Replace legacy `G4` only after reviewing evidence: choose `G4-stock` for original observations and `G4-recon` for reconstruction comparisons. Do not bulk-convert ambiguous labels to G4-recon. Generic G4 remains readable, is listed in `legacy_g4_ambiguous`, and blocks reconstruction closure.
+- Only G3 and G4-recon satisfy the reconstruction dependency gate. G4-stock does not imply reconstructed source exists. `totals.stock_g4` and `totals.recon_g4` replace the old ambiguous `proven_g4` count.
+- G0 stays in `inventoried_nodes` and `excluded_g0`, but is removed from live `nodes`, `graded`, pending counts, and queues. A caller still referencing G0 remains blocked until the graph inconsistency is reviewed. An all-G0 inventory has `coverage_applicable: false` (N/A).
+- Remove or reconcile grade entries not represented in the graph; they now cause a structured GRADES error rather than inflating totals.
+- Supply explicit adjacency for every reviewed function. An absent entry or `null` means unknown; `[]` declares a leaf. List unresolved indirect callers in `unknown_calls`. These nodes and their dependent closures are blocked.
+- Add the boolean `inventory_complete: true` only when the inventoried universe has been reviewed. Omission defaults to false. Coverage remains indeterminate with incomplete inventory, ungraded nodes, unknown adjacency/calls, or ambiguous legacy G4. This flag records a declaration, not an automated proof of graph completeness.
+- Update invocations that relied on the current working directory: relative inputs now resolve under `--project`.
 
-Treat `testable_now` as a candidate queue for review. These limitations are not fixed by the current synthetic test results.
+The iterative closure calculation supports large call chains without Python recursion. Cycles remain conservatively unresolved. Duplicate graph edges do not multiply caller leverage. A downgraded callee blocks dependent closure when the report is regenerated.
+
+## Remaining evidence boundaries
+
+Grades are declarations: `grades_are_declared: true` and `evidence_verified: false`. The scheduler does not inspect compile logs, witness hashes, controls, timestamps, or retractions in external records. Re-run it after updating grades; review the underlying evidence independently.
+
+`done_g3_plus` counts declared G3/G4-recon units and is not a mission completion measure. `ft_g3_closed` and `ft_g4_closed` count units with matching declared callee closure, excluding each unit's own grade. An ungraded leaf has empty callee closure but is not verified. Treat `testable_now` as a reconstruction candidate queue, not an executable certification decision; witness selection still requires review.
+
+A G3 closure does not establish linking, ABI compatibility, or execution. G4-recon closure does not isolate every fault to the current function: shared state, memory layout, dependency applicability, and bench setup also matter. No report promotes a grade or establishes universal equivalence.
 
 ## Package verification
 
