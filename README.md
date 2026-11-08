@@ -91,6 +91,18 @@ It never establishes semantic truth or promotes a grade; `evidence_verified`, `s
 python -B skills/decompile/examples/run_pilot.py
 ```
 
+## Census presentation — local preview
+
+For a monochrome text view of the same declared census, use the optional
+[census bars guide](skills/decompile/references/census-presentation.md):
+
+```powershell
+python -B skills/decompile/scripts/census_bars.py --project PROJECT_ROOT --callgraph analysis/callgraph.json --grades analysis/grades.json --ascii
+```
+
+This presentation preserves closure calculations and separates G4-stock/G4-recon. It does not
+reconcile or edit anything and does not claim that declared grades have been independently verified.
+
 ## Using DisasmLedger with VeriMission
 
 The local preview also includes an optional [8.2 observation adapter](skills/decompile/references/verimission-adapter.md).

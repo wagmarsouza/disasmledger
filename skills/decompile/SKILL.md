@@ -3,7 +3,7 @@ name: decompile
 description: "DisasmLedger Decompile: an evidence-bound, end-to-end playbook for recompilation-grade decompilation and disassembly — a stage pipeline, tool-per-stage routing, an explicit grade ladder, and differential-test scheduling that composes the binary-analysis-profile and renode-bench skills."
 metadata:
   display-name: DisasmLedger Decompile
-  version: "0.5.0-dev"
+  version: "0.6.0-dev"
 ---
 
 # DisasmLedger Decompile
@@ -81,3 +81,12 @@ reconstruction maturity. Preserve raw grades, ambiguity, mismatches and missing 
 never repair them into fictitious progress. Add the read-only source verifier and frozen artifacts
 to explicitly authorized acceptance criteria; observation hashes alone do not bind later raw drift.
 Existing grade maps, closure reports and bench/profile helpers remain unchanged.
+
+## Optional census presentation
+
+Use [scripts/census_bars.py](scripts/census_bars.py) for a read-only monochrome grade distribution;
+read [references/census-presentation.md](references/census-presentation.md) for inputs, counts and
+display limits. It reuses closure totals, excludes G0 from the live denominator and keeps G4-stock,
+G4-recon, ambiguous legacy G4 and missing grades distinct. Presentation never promotes a grade,
+changes the denominator, verifies semantics or replaces native reconciliation. No default project
+path, hardcoded census size, message sending, schedule or host installation is introduced.

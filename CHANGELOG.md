@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.3.0 development preview — not installed or published
+
+- Decompile 0.6.0-dev adds read-only monochrome census bars over existing closure validation/totals.
+- Live denominator/G0 exclusions, G3 + G4-recon summary, uncertainty and legacy behavior are preserved.
+  G4-stock, G4-recon, ambiguous legacy G4 and ungraded units remain separate; an all-G0 census is N/A.
+- Added Unicode/ASCII display, bounded visual width, structured view output and 14 behavioral tests.
+  No reconciler, scheduler, sender, project-specific constants or implicit migration is added.
+
 ## v2.2.0 development preview — not installed or published
 
 - Decompile 0.5.0-dev adds an optional adapter from declared DisasmLedger snapshots to native
