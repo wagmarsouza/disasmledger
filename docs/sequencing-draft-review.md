@@ -1,11 +1,13 @@
 # Review — up-front call-graph export sequencing draft
 
-Assessment only. No PR, issue, publication or change to the original private draft.
+Initial assessment followed by an explicitly authorized local documentation update on 2026-11-08.
+The private PR draft was corrected and the guide updated; no PR, issue or publication was created.
 
 The proposed documentation hint is useful for a whole-image reconstruction campaign: obtain a
 reviewed initial graph before using closure-based leverage to select work. Existing local guidance
 already covers identity, reuse invalidation and unknown edges; this is a sequencing clarification,
-not a missing exporter or proof mechanism. The adapter adoption guide now makes that timing explicit.
+not a missing exporter or proof mechanism. The canonical sequence now lives in the toolchain guide;
+the provenance and adapter guides link to it rather than repeat its rules.
 
 Refinements to the proposed wording:
 
@@ -20,12 +22,7 @@ Refinements to the proposed wording:
 5. The illustrative `@@ Choosing ... @@` hunk lacks unified-diff line ranges. Regenerate a real
    patch from the current branch before using `git apply`; do not treat this draft as executable input.
 
-Suggested compact wording:
-
-> For a whole-image reconstruction, export and review an initial call graph before closure-based
-> scheduling. Reuse it while the binary, map, relevant tool versions and settings remain compatible;
-> reassess/re-export after changes. Scheduling reflects the declared graph only: preserve unresolved
-> calls and incomplete-inventory warnings, and investigate selected indirect edges without treating
-> recovered targets as runtime proof.
-
-No new API, backend installation or behavior change is implied by that paragraph.
+See the [canonical sequencing section](../skills/decompile/references/toolchain.md#whole-image-graph-export-sequencing)
+for the maintained wording. The corrected draft contains a real Git-generated patch against its
+stated baseline instead of the earlier illustrative hunk. No new API, engine installation or
+runtime behavior change is implied by this documentation update.

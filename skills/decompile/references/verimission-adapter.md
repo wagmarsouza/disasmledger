@@ -24,10 +24,9 @@ human-authorized mission revision workflow. The adapter never invokes that workf
 newly inconvenient units, relabel G0 or edit the denominator to make a report pass. If all units are
 excluded, use notes-only review; a fake 0/0 inventory policy is not generated.
 
-For a whole-image campaign, obtain and review a useful initial graph before graph-based scheduling
-and baseline adoption. Reuse it only while relevant inputs remain compatible. An export is not
-guaranteed complete, and a partial graph supports only declared-edge leverage, not a true global
-fan-in maximum. Preserve unknown calls and use the existing focused-analysis guidance as needed.
+Follow the [whole-image graph-export sequence](toolchain.md#whole-image-graph-export-sequencing)
+before adopting the adapter baseline. That guide owns export timing, reuse conditions and the
+limits of graph-based scheduling; the fixed epoch and projection rules here remain adapter-specific.
 
 ## Reconstruction projection and its limits
 

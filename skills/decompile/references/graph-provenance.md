@@ -13,8 +13,8 @@ not replace the target manifest or revalidate the address map. Matching names/in
 builds do not establish unit equivalence. Use the existing profile rules for that comparison.
 
 Reuse an existing Ghidra/pyghidra exporter. Freeze its JSON, producer version/options and supporting
-artifacts. Initial exports may be reused while relevant bytes, maps, modes, versions and settings
-remain compatible. Reassess/re-export after changes; do not silently update old receipts.
+artifacts. Follow the [initial export and reuse sequence](toolchain.md#whole-image-graph-export-sequencing)
+for a whole-image campaign; do not silently update old receipts.
 
 ## Focused angr routing
 

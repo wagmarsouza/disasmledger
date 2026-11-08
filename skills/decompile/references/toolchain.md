@@ -28,9 +28,21 @@ part of the evidence.
   call graph finds the function by its position in the program. Reuse an existing
   call-graph exporter (for example a headless `ExportCalls` script or `pyghidra-mcp`) rather
   than rebuilding one; feed its JSON to `closure.py`.
+  For a whole-image campaign, follow the [initial graph-export sequence](#whole-image-graph-export-sequencing).
 - **SVD-Loader** early, to name memory-mapped peripheral registers from the vendor SVD. It
   turns anonymous MMIO offsets into names and saves manual datasheet cross-referencing; it
   does not prove how the firmware uses them.
+
+### Whole-image graph export sequencing
+
+For a whole-image reconstruction, export and review an initial call graph before closure-based
+scheduling. Reuse it while the binary, map, relevant tool versions and settings remain compatible;
+reassess/re-export after changes. Exporting does not guarantee completeness: preserve unknown
+adjacency/calls and incomplete-inventory warnings. The leverage ranking counts declared undone
+direct callers, not missing edges, full runtime reachability or a true global fan-in maximum.
+Investigate selected unresolved edges with suitable static, manual, symbolic or runtime methods;
+angr and runtime probes are options, not mandatory or infallible steps. Recovered targets alone
+are not runtime proof. For frozen exports and evidence binding, see [graph-provenance.md](graph-provenance.md).
 
 ## Choosing the emulator: Unicorn vs Renode
 
@@ -78,8 +90,7 @@ the bytes are code nor a true function boundary. Its [SKIPDATA documentation](ht
 explicitly warns about that distinction. Treat discovered inventory size as a candidate denominator
 until reviewed. Cross-check boundaries with map, control flow, references and other evidence.
 
-Initial exports can be reused only while relevant inputs remain compatible. Existing
-binary-analysis-profile already governs hashes, maps, unit identities and changed configurations:
+Existing binary-analysis-profile already governs hashes, maps, unit identities and changed configurations:
 reuse those controls instead of a second identity system. A matching label or index does not prove
 cross-build identity, and a tool database mutation does not itself establish changed semantics.
 
