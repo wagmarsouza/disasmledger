@@ -1,6 +1,6 @@
 # Changelog
 
-## v2.3.0 development preview — not installed or published
+## v2.3.0-rc.1 — 2026-11-08 (public preview)
 
 - Decompile 0.6.0-dev adds read-only monochrome census bars over existing closure validation/totals.
 - Live denominator/G0 exclusions, G3 + G4-recon summary, uncertainty and legacy behavior are preserved.
@@ -8,7 +8,7 @@
 - Added Unicode/ASCII display, bounded visual width, structured view output and 14 behavioral tests.
   No reconciler, scheduler, sender, project-specific constants or implicit migration is added.
 
-## v2.2.0 development preview — not installed or published
+## Included development stage v2.2.0
 
 - Decompile 0.5.0-dev adds an optional adapter from declared DisasmLedger snapshots to native
   VeriMission 8.2 observations, with frozen epoch units/G0 exclusions and explicit reconstruction projection.
@@ -19,7 +19,7 @@
 - Added an explicit native-engine integration pilot and adapter tests. Existing APIs and separate
   skill operation are preserved. No external engine, live target, schedule or runtime deployment added.
 
-## v2.1.0 development preview — not installed or published
+## Included development stage v2.1.0
 
 - Decompile 0.4.0-dev adds optional graph/grade provenance receipts, producer-context binding and
   inferred/resolved/observed edge-origin summaries without changing legacy report-v2 behavior.

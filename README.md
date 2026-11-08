@@ -6,10 +6,11 @@
 
 Skills for traceable binary analysis and firmware test benches. The project contains three independent skills: `binary-analysis-profile` organises target identity, address maps, analysis units, and witnesses; `renode-bench` guides the creation of a Renode bench and the interpretation of program-counter traces; `decompile` orchestrates a staged, grade-gated reconstruction workflow over the other two and schedules work by call-graph closure. They can be used separately or together.
 
-**Local development preview:** optional graph provenance, focused angr routing and versioned bench
-capability gating are being developed on this branch. Nothing has been installed or published.
-The installation commands below refer to the previously published version, not this preview.
-See [the refinement guide](docs/toolchain-refinements.md) and its precise test limits.
+**Public preview 2.3.0:** optional provenance, executor capability gating, the native VeriMission 8.2
+adapter and read-only census bars are available in [v2.3.0-rc.1](docs/release-v2.3.0-rc.1.md).
+Default-branch install commands below now discover this preview; use a tagged release for
+reproducibility. Publishing does not install tools or migrate a project. See
+[the refinement guide](docs/toolchain-refinements.md) and the release test limits.
 
 ## Installation
 
@@ -91,7 +92,7 @@ It never establishes semantic truth or promotes a grade; `evidence_verified`, `s
 python -B skills/decompile/examples/run_pilot.py
 ```
 
-## Census presentation — local preview
+## Census presentation — public preview
 
 For a monochrome text view of the same declared census, use the optional
 [census bars guide](skills/decompile/references/census-presentation.md):
