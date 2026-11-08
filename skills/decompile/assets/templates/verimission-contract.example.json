@@ -1,0 +1,9 @@
+{
+  "format": "disasm-verimission-contract-v1",
+  "target": {"path": "evidence/original-image.dat", "sha256": "REPLACE_WITH_EXISTING_PROFILE_BINARY_SHA256"},
+  "projection": "reconstruction-v1",
+  "scope": "REPLACE_WITH_EXACT_DECLARED_INVENTORY_SCOPE",
+  "anchor": 0,
+  "units": ["unit-a", "unit-b", "discarded-unit"],
+  "excluded_g0": ["discarded-unit"]
+}

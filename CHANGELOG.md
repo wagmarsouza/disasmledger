@@ -1,5 +1,16 @@
 # Changelog
 
+## v2.2.0 development preview — not installed or published
+
+- Decompile 0.5.0-dev adds an optional adapter from declared DisasmLedger snapshots to native
+  VeriMission 8.2 observations, with frozen epoch units/G0 exclusions and explicit reconstruction projection.
+- Raw stock-only/legacy grades and unprojected changes remain in source-bound receipts. Export never
+  creates transition evidence, reconciles, promotes grades, revises missions or edits a harness store.
+- Existing closure normalization/provenance are reused. New-bundle export and read-only verification
+  bind current input/helper hashes; native reconciliation/reread remain in the original 8.2 engine.
+- Added an explicit native-engine integration pilot and adapter tests. Existing APIs and separate
+  skill operation are preserved. No external engine, live target, schedule or runtime deployment added.
+
 ## v2.1.0 development preview — not installed or published
 
 - Decompile 0.4.0-dev adds optional graph/grade provenance receipts, producer-context binding and

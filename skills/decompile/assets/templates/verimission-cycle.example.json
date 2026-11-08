@@ -1,0 +1,10 @@
+{
+  "format": "disasm-cycle-snapshot-v1",
+  "cycle": 1,
+  "callgraph": {"path": "analysis/callgraph-0001.json", "sha256": "REPLACE_WITH_ACTUAL_SHA256"},
+  "live": {"path": "analysis/grades-live-0001.json", "sha256": "REPLACE_WITH_ACTUAL_SHA256"},
+  "closed": {"path": "analysis/grades-closed-0001.json", "sha256": "REPLACE_WITH_ACTUAL_SHA256"},
+  "transitions": [],
+  "facts_recorded": [],
+  "facts_used": []
+}

@@ -3,7 +3,7 @@ name: decompile
 description: "DisasmLedger Decompile: an evidence-bound, end-to-end playbook for recompilation-grade decompilation and disassembly — a stage pipeline, tool-per-stage routing, an explicit grade ladder, and differential-test scheduling that composes the binary-analysis-profile and renode-bench skills."
 metadata:
   display-name: DisasmLedger Decompile
-  version: "0.4.0-dev"
+  version: "0.5.0-dev"
 ---
 
 # DisasmLedger Decompile
@@ -67,3 +67,17 @@ identity rules. The helper checks physical receipts and declared edge origins, n
 execution or runtime truth. It never clears unknown calls, changes grades or grants authority.
 An inferred/resolved/observed label alone cannot promote a result. No new engine, identity system,
 census reconciler or schedule is introduced. This preview has not been installed or published.
+
+## Optional VeriMission 8.2 observation adapter
+
+Read [references/verimission-adapter.md](references/verimission-adapter.md) before exporting native
+inventory observations with [scripts/verimission_adapter.py](scripts/verimission_adapter.py).
+The adapter reuses closure normalization/provenance and emits frozen source-bound bundles. The
+existing native 8.2 engine alone reconciles and reviews them. Do not install/reinitialize a harness,
+edit its canonical state, duplicate its reconciler or revise a mission automatically.
+
+Use a fixed declared epoch/scope, stable units and G0 exclusions. G4-stock/legacy G4 do not imply
+reconstruction maturity. Preserve raw grades, ambiguity, mismatches and missing transition receipts;
+never repair them into fictitious progress. Add the read-only source verifier and frozen artifacts
+to explicitly authorized acceptance criteria; observation hashes alone do not bind later raw drift.
+Existing grade maps, closure reports and bench/profile helpers remain unchanged.

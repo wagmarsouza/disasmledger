@@ -77,7 +77,7 @@ python -B .\skills\renode-bench\scripts\differential.py --selftest
 
 Read [the skill](skills/decompile/SKILL.md) and the references in `skills/decompile/references/` (methodology, toolchain routing, and differential testing). It is an orchestrator: it does not disassemble, execute, or grade anything itself. It distinguishes G0 discarded, G1 raw, G2 semantic hypothesis, G3 compiles, G4-stock original observations, and G4-recon reconstruction comparisons, and composes `binary-analysis-profile` and `renode-bench` for the evidence steps.
 
-The only executable helper is a read-only scheduler. It consumes a declared call graph and a declared grade map — produced by your own tools, in the formats shown in `skills/decompile/assets/templates/` — and reports which units are differentially testable now (their callee-closure is already reconstructed) and which undone helpers carry the most leverage:
+The closure scheduler consumes a declared call graph and a declared grade map — produced by your own tools, in the formats shown in `skills/decompile/assets/templates/` — and reports which units are differentially testable now (their callee-closure is already reconstructed) and which undone helpers carry the most leverage:
 
 ```powershell
 $c = '.\skills\decompile\scripts\closure.py'
@@ -92,6 +92,12 @@ python -B skills/decompile/examples/run_pilot.py
 ```
 
 ## Using DisasmLedger with VeriMission
+
+The local preview also includes an optional [8.2 observation adapter](skills/decompile/references/verimission-adapter.md).
+It translates declared grade snapshots into native observations and checks frozen source bindings;
+it never copies VeriMission's reconciler or edits mission state. G4-stock stays distinct from
+reconstruction, and G0 exclusions/denominator are fixed per declared epoch. No installation,
+publication or live migration has been performed. See [verification](docs/verimission-adapter-verification.md).
 
 [VeriMission](https://github.com/wagmarsouza/long-project-agent-harness) is optional. It coordinates long-running missions, acceptance criteria, claims, and retractions. DisasmLedger does not include the VeriMission executor and does not depend on it to run its helpers. If you use both projects, read the [optional integration guide](skills/binary-analysis-profile/references/v8-integration.md) and consult the installed harness version: canonical state and commands belong to that version.
 
