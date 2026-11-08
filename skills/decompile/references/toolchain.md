@@ -13,6 +13,7 @@ part of the evidence.
 | Triage / inventory | capstone (fast linear/targeted disasm), the call graph | boundaries, structure classes, fan-in | function-boundary proof, semantics |
 | Call graph / closure | Ghidra/pyghidra headless, pyghidra-mcp, `closure.py` | adjacency, fan-in, FT (closed) sets | that an edge is exercised at runtime |
 | Deep decompile | Ghidra / pyghidra (interactive or headless) | pseudocode, types, xrefs | correctness of the pseudocode |
+| Residual indirect-edge investigation | angr static/symbolic CFG analyses, when justified | candidate/resolved indirect targets with assumptions | that all targets were found or a path executed |
 | Transcription gate | arm-none-eabi-gcc/clang (`-c -Wall -Wextra`) | a compile (G3) | behaviour (compiling ≠ correct) |
 | Byte/instruction match | objdiff, asm-differ, decomp-permuter | an instruction diff / a match (M) | behaviour beyond the matched bytes |
 | Bench / behaviour | Unicorn (CPU-only) OR Renode (peripherals), renode-bench | a two-witness observation (G4) | hardware behaviour, universality |
@@ -64,3 +65,26 @@ LLM decompilation can score *below* a raw decompiler, and that the reliable patt
 loop is exactly the compile gate + match + two-witness bench in this skill. Use a model to
 draft or refine a transcription; let the gate and the bench decide, and quarantine any
 agent's claim until it is independently checked.
+
+## Reuse, focused analysis and capability evidence
+
+Read [graph-provenance.md](graph-provenance.md) for a focused angr workflow and optional physical
+export binding. Start with the existing graph's unresolved calls, not a second full-image inventory.
+Recovered targets may still be incomplete. Annotate inferred, tool-declared resolved and observed
+origins without erasing unresolved sites or counting graph growth as a grade promotion.
+
+Capstone decodes bytes under the chosen ISA/mode; successful decoding alone proves neither that
+the bytes are code nor a true function boundary. Its [SKIPDATA documentation](https://www.capstone-engine.org/skipdata.html)
+explicitly warns about that distinction. Treat discovered inventory size as a candidate denominator
+until reviewed. Cross-check boundaries with map, control flow, references and other evidence.
+
+Initial exports can be reused only while relevant inputs remain compatible. Existing
+binary-analysis-profile already governs hashes, maps, unit identities and changed configurations:
+reuse those controls instead of a second identity system. A matching label or index does not prove
+cross-build identity, and a tool database mutation does not itself establish changed semantics.
+
+Choose an executor by declared, evidenced capabilities for this configuration, not an unconditional
+float/MMIO rule. ARM VFP setup can matter in Unicorn; peripheral/boot requirements may justify a
+different model. Use the optional [bench capability guide](../../renode-bench/references/executor-capabilities.md).
+Neither executor is final authority for untested real-hardware behavior. No automatic dispatch,
+fallback, engine installation or new census/review scheduler is introduced here.

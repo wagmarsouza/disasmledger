@@ -1,0 +1,11 @@
+{
+  "format": "bench-executor-capabilities-v1",
+  "target_sha256": "REPLACE_WITH_EXISTING_PROFILE_BINARY_SHA256",
+  "executor": {"name": "REPLACE_WITH_ACTUAL_EXECUTOR", "version": "REPLACE_WITH_ACTUAL_VERSION", "cpu_model": "REPLACE_WITH_ACTUAL_CPU_MODEL", "configuration": {}},
+  "assessment_context_sha256": "REPLACE_AFTER_REAL_CAPABILITY_ASSESSMENT",
+  "capabilities": {
+    "cold-invoke": {"status": "unknown", "reason": "Draft; not tested", "evidence": []},
+    "vfp": {"status": "unknown", "reason": "Draft; not tested", "evidence": []},
+    "mmio": {"status": "unknown", "reason": "Draft; not tested", "evidence": []}
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "format": "bench-requirements-v1",
+  "target": {"path": "evidence/original-image.dat", "sha256": "REPLACE_WITH_EXISTING_PROFILE_BINARY_SHA256"},
+  "unit_id": "REPLACE_WITH_EXISTING_PROFILE_UNIT_ID",
+  "required_features": ["cold-invoke"]
+}

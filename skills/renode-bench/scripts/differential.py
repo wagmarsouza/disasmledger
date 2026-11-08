@@ -17,7 +17,7 @@ WHAT IT OWNS vs WHAT IT DELEGATES
   version: they are part of the evidence.
 
 THE POSITION-INDEPENDENCE LIMIT (honest bound)
-  Running OUR body in RAM only proves the stock when the blob is position-independent: a leaf
+  A RAM-body comparison requires a position-independent blob to be interpretable: a leaf
   with no absolute literal-pool reference and no BL/BLX to an address that is not loaded in the
   same space. For a caller, load its callees too (or a stub already proven equivalent) at their
   own addresses, or the invoke jumps into emptiness. A blob that fails this prints a match that
@@ -25,8 +25,9 @@ THE POSITION-INDEPENDENCE LIMIT (honest bound)
 
 WHAT A PASS MEANS
   "Our recompiled body reproduces the stock on the witnessed inputs/branches, cold." It does NOT
-  prove un-witnessed paths, behaviour under live boot/therapy state, or semantic intent. On any
-  mismatch the transcription is wrong: fix it, do NOT promote (R80).
+prove un-witnessed paths, behaviour under live boot/therapy state, or semantic intent. A mismatch
+requires review of reconstruction, ABI, setup and bench, not exclusive blame on the transcription.
+Do not promote on mismatch.
 
 Programmatic use (the invoke contract matches a forced-invoke engine's `invoke`):
     from differential import differential
@@ -134,7 +135,10 @@ def differential(title, cases, invoke, cpp_src=None, blob=None, base=0x20004000,
         helper = Path(__file__).with_name('executor_capabilities.py')
         spec = importlib.util.spec_from_file_location('disasm_executor_capabilities', helper)
         capability = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(capability)
+        try:
+            spec.loader.exec_module(capability)
+        except (OSError, ImportError) as error:
+            raise DifferentialError('CAPABILITY', 'Bundled capability assessor is unavailable; contextual execution refused') from error
 
         def recheck_context():
             try:

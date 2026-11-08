@@ -45,15 +45,16 @@ Do not count the same reformatted trace as independent evidence. When comparing 
 
 A bench normally characterises the *original* function. The differential harness
 ([scripts/differential.py](../scripts/differential.py)) verifies a *reconstruction* instead: it
-proves that your recompiled C++ reproduces the stock, which catches a transcription error that a
-clean compile cannot.
+compares your recompiled C++ with the stock witnesses, catching observable mismatches that a
+clean compile may miss.
 
 The loop: compile the candidate C++ to a position-independent Thumb `.text` blob with the target's
 real cross-toolchain; load the blob into RAM at a base address; forced-invoke it at that base on the
 same bench; and compare its outputs to the witnesses already established for the stock function. The
 harness enforces the two-witness discipline — at least two witnesses on different branches or outputs,
-plus a clean return — and refuses a single or non-discriminating witness set. A match proves the
-reconstruction on the witnessed branches, cold, and nothing more; a mismatch means the C++ is wrong.
+plus a clean return — and refuses a single or non-discriminating witness set. A match supports the
+reconstruction only under the witnessed conditions, and nothing more. A mismatch needs investigation
+of the reconstruction, ABI, setup and bench; it does not establish an exclusive fault cause.
 
 The harness owns only the generic parts (compile, lay the blob in RAM, compare under the discipline).
 Execution is yours to supply as an `invoke(fn, regs, seeds, reads, steps) -> {label: int}` callable,
@@ -61,11 +62,15 @@ where `label` is `pc`, `reg<N>`, or `mem_<ADDR8X>` and `seeds` is `[(addr, value
 pure-logic leaf to a CPU-only emulator (Unicorn), and a unit bound to peripherals or a boot/therapy
 context to Renode.
 
-Honest bound: running the body in RAM only proves the stock when the blob is position-independent — a
+Honest bound: a RAM-body comparison requires a position-independent blob to be interpretable — a
 leaf with no absolute literal-pool reference and no call to an address not loaded in the same space.
 For a caller, load its callees, or a stub already proven equivalent, at their own addresses first, or
 the invoke jumps into emptiness and the match is meaningless. Classify the unit before trusting a pass,
 and record the toolchain, flags, emulator, and version as part of the evidence.
+
+For explicit support/unknown/unsupported requirements and versioned context preflight, read
+[executor-capabilities.md](executor-capabilities.md). It reuses the same differential comparison
+and never replaces it with a capability claim, chooses a fallback or grants permission to execute.
 
 ## Integration with a long-running harness
 

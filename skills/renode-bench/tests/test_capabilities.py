@@ -159,6 +159,45 @@ class CapabilityTests(unittest.TestCase):
             path.write_text(raw)
             self.reject('INPUT', lambda: caps.load_json(path))
 
+    def test_in_memory_context_change_after_invocation_stops_later_cases(self):
+        calls = []
+        def invoke(**kwargs):
+            calls.append(kwargs['regs'][0])
+            self.manifest['executor']['version'] = 'changed-during-run'
+            self.manifest['assessment_context_sha256'] = caps.context_digest(self.manifest)
+            return {'reg0': kwargs['regs'][0] + 1}
+        with self.assertRaises(diff.DifferentialError) as caught:
+            self.run_diff(invoke)
+        self.assertEqual(caught.exception.code, 'CAPABILITY_STALE')
+        self.assertEqual(calls, [1])
+
+    def test_ineligible_cli_returns_two_without_dispatch(self):
+        self.request['required_features'].append('mmio')
+        (self.root / 'manifest.json').write_text(json.dumps(self.manifest))
+        (self.root / 'request.json').write_text(json.dumps(self.request))
+        run = subprocess.run([sys.executable, '-B', str(SCRIPT), '--project', str(self.root), 'assess',
+                              '--manifest', 'manifest.json', '--requirements', 'request.json'],
+                             capture_output=True, text=True, timeout=10)
+        self.assertEqual(run.returncode, 2)
+        self.assertFalse(json.loads(run.stdout)['result']['eligible'])
+
+    def test_partial_context_is_not_silently_treated_as_legacy(self):
+        with self.assertRaises(diff.DifferentialError) as caught:
+            self.run_diff(lambda **_: self.fail('Must not run'), context={'project': self.root})
+        self.assertEqual(caught.exception.code, 'CAPABILITY')
+
+    def test_missing_assessor_refuses_contextual_execution_cleanly(self):
+        copied = self.root / 'differential.py'
+        copied.write_bytes(DIFFERENTIAL.read_bytes())
+        local_spec = importlib.util.spec_from_file_location('standalone_differential', copied)
+        local = importlib.util.module_from_spec(local_spec)
+        local_spec.loader.exec_module(local)
+        cases = [{'expect': {'reg0': 1}}, {'expect': {'reg0': 2}}]
+        with self.assertRaises(local.DifferentialError) as caught:
+            local.differential('missing-helper', cases, lambda **_: self.fail('Must not run'),
+                               blob=b'not-executed', executor_context=self.context(), print_report=False)
+        self.assertEqual(caught.exception.code, 'CAPABILITY')
+
 
 if __name__ == '__main__':
     unittest.main()

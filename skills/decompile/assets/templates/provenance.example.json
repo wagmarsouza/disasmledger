@@ -1,0 +1,9 @@
+{
+  "format": "decompile-provenance-v1",
+  "target": {"path": "evidence/original-image.dat", "sha256": "REPLACE_WITH_ACTUAL_SHA256"},
+  "callgraph": {"path": "analysis/callgraph.json", "sha256": "REPLACE_WITH_ACTUAL_SHA256"},
+  "grades": {"path": "analysis/grades.json", "sha256": "REPLACE_WITH_ACTUAL_SHA256"},
+  "producer": {"name": "REPLACE_WITH_ACTUAL_EXPORTER", "version": "REPLACE_WITH_ACTUAL_VERSION", "settings": {}},
+  "export_context_sha256": "REPLACE_AFTER_REVIEWING_TARGET_AND_PRODUCER_CONTEXT",
+  "edges": []
+}

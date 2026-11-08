@@ -3,7 +3,7 @@ name: renode-bench
 description: "DisasmLedger Renode Lab: prepare, run, and interpret reproducible Renode benches for authorised firmware, with traceable configuration, traces, and explicit boundaries between emulation and hardware."
 metadata:
   display-name: DisasmLedger Renode Lab
-  version: "1.1.0"
+  version: "1.2.0-dev"
 ---
 
 # DisasmLedger Renode Lab
@@ -28,7 +28,7 @@ Use this skill when the user requests a Renode bench, a boot trace, headless exe
 5. Preserve stdout, the Renode log, and the program-counter trace. Record an incomplete run as an unknown outcome.
 6. Analyse a program-counter trace with [scripts/analyze_trace.py](scripts/analyze_trace.py). Frequencies and blocks suggest regions of interest; they do not establish semantics.
 7. Compare the observation with authorised static analysis or documentation. Report contradictions, coverage, and the next discriminating test.
-8. To verify a *reconstruction* rather than characterise the original, use the differential harness ([scripts/differential.py](scripts/differential.py)): recompile the candidate C++ to a position-independent Thumb blob, load it into RAM, forced-invoke it on the same bench, and check its outputs against the witnesses already established for the stock function, under the two-witness discipline. A match proves the transcription on the witnessed branches, cold; a mismatch means the C++ is wrong — fix it, do not promote.
+8. To compare a *reconstruction* rather than characterise the original, use the differential harness ([scripts/differential.py](scripts/differential.py)): recompile the candidate C++ to a position-independent Thumb blob, load it into RAM, forced-invoke it on the same bench, and check its outputs against the witnesses already established for the stock function, under the two-witness discipline. A match is bounded to witnessed inputs, model and initial state. Investigate a mismatch across reconstruction, ABI, initial state and bench configuration; it does not uniquely identify a wrong C++ body. Do not promote on mismatch.
 
 Read [references/usage.md](references/usage.md) before building the first bench for a target. When used with [VeriMission](https://github.com/wagmarsouza/long-project-agent-harness), produce logs and manifests before `check` and record the evidence scope; do not turn a passing trace check into a universal conclusion.
 
@@ -68,3 +68,17 @@ python -B -m unittest discover -s 'PATH_TO_SKILL\tests' -v
 ```
 
 The tests use synthetic traces and a fake bench. They neither start Renode nor execute firmware, and the differential self-check runs without the ARM cross-toolchain.
+
+## Optional executor capability gate — local preview
+
+Read [references/executor-capabilities.md](references/executor-capabilities.md) when selecting an
+executor, explaining an escalation or binding a differential run to declared capabilities.
+[scripts/executor_capabilities.py](scripts/executor_capabilities.py) is read-only and stdlib-only.
+It distinguishes supported, unsupported and unknown features for a target/version/configuration,
+requiring current evidence for declared support. It does not test or start an engine itself.
+
+Use the opt-in `executor_context` argument to reuse that gate before/after differential invocation.
+Unknown/unsupported requirements block invocation; stale context invalidates the contextual result.
+No automatic fallback occurs. Do not infer VFP rejection from Unicorn's name or MMIO support from
+Renode's name. Preserve the existing authorization and profile identity rules. Legacy calls and
+the trace analyzer remain available unchanged. This preview has not been installed or published.

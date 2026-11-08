@@ -6,6 +6,11 @@
 
 Skills for traceable binary analysis and firmware test benches. The project contains three independent skills: `binary-analysis-profile` organises target identity, address maps, analysis units, and witnesses; `renode-bench` guides the creation of a Renode bench and the interpretation of program-counter traces; `decompile` orchestrates a staged, grade-gated reconstruction workflow over the other two and schedules work by call-graph closure. They can be used separately or together.
 
+**Local development preview:** optional graph provenance, focused angr routing and versioned bench
+capability gating are being developed on this branch. Nothing has been installed or published.
+The installation commands below refer to the previously published version, not this preview.
+See [the refinement guide](docs/toolchain-refinements.md) and its precise test limits.
+
 ## Installation
 
 With Node.js and the [Skills CLI](https://skills.sh/):

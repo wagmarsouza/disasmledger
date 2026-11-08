@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.1.0 development preview — not installed or published
+
+- Decompile 0.4.0-dev adds optional graph/grade provenance receipts, producer-context binding and
+  inferred/resolved/observed edge-origin summaries without changing legacy report-v2 behavior.
+- Renode Bench 1.2.0-dev adds a read-only version/configuration-specific capability assessment and
+  opt-in differential preflight. Unknown/unsupported features refuse invocation; changed context
+  invalidates contextual comparison. No automatic fallback or dispatch is introduced.
+- Added targeted angr guidance and calibrated Capstone, VFP and differential claim ceilings.
+  Existing binary-profile identity/invalidation controls and all legacy helpers are preserved.
+- Synthetic tests/pilot validate consistency, gating and compatibility only. No external engine,
+  native ARM toolchain or real target is installed or exercised by this preview.
+
 ## v2.0.0 — 2026-11-06
 
 - Decompile 0.3.0 distinguishes G4-stock from G4-recon; ambiguous legacy G4 blocks reconstruction closure rather than proving equivalence.
