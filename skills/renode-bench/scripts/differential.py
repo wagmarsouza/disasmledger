@@ -38,7 +38,9 @@ Programmatic use (the invoke contract matches a forced-invoke engine's `invoke`)
 seeds that load the blob; your invoke only has to execute at `fn` and read the observables back.
 """
 import argparse
+import importlib.util
 import os
+from pathlib import Path
 import struct
 import subprocess
 import sys
@@ -102,7 +104,7 @@ def distinct_expectations(cases):
 
 
 def differential(title, cases, invoke, cpp_src=None, blob=None, base=0x20004000,
-                 clean_pc=None, cflags=None, steps=60, print_report=True):
+                 clean_pc=None, cflags=None, steps=60, print_report=True, executor_context=None):
     """Prove OUR reconstruction reproduces the stock witnesses on the bench.
 
     Exactly one of `cpp_src` (compiled here) or `blob` (a precompiled Thumb .text) is given.
@@ -113,6 +115,10 @@ def differential(title, cases, invoke, cpp_src=None, blob=None, base=0x20004000,
 
     Returns True only if every case matches and the discrimination minimum holds. A pass is bounded
     to the witnessed inputs/branches, cold; it is not semantic truth. On mismatch: fix, do not promote.
+
+    Optional executor_context={project, manifest, requirements} uses the bundled capability assessor.
+    It prevents invocation for unsupported/unknown requirements and rejects a stale context. It does
+    not authenticate that the supplied invoke actually uses that executor. Legacy calls are unchanged.
     """
     if (cpp_src is None) == (blob is None):
         raise DifferentialError("INPUT", "pass exactly one of cpp_src or blob")
@@ -121,13 +127,39 @@ def differential(title, cases, invoke, cpp_src=None, blob=None, base=0x20004000,
     if distinct_expectations(cases) < 2:
         raise DifferentialError("WITNESS", "witnesses must exercise at least two distinct outputs/branches")
 
+    assessment, initial_identity = None, None
+    if executor_context is not None:
+        if not isinstance(executor_context, dict) or set(executor_context) != {'project', 'manifest', 'requirements'}:
+            raise DifferentialError('CAPABILITY', 'executor_context requires project, manifest and requirements')
+        helper = Path(__file__).with_name('executor_capabilities.py')
+        spec = importlib.util.spec_from_file_location('disasm_executor_capabilities', helper)
+        capability = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(capability)
+
+        def recheck_context():
+            try:
+                report = capability.assess(executor_context['project'], executor_context['manifest'], executor_context['requirements'])
+            except capability.CapabilityError as error:
+                raise DifferentialError(error.code, str(error)) from error
+            if not report['eligible']:
+                raise DifferentialError('CAPABILITY', 'Required capabilities are unsupported or unknown; inspect assessment before choosing an executor')
+            identity = (report['manifest_sha256'], report['requirements_sha256'])
+            if initial_identity is not None and identity != initial_identity:
+                raise DifferentialError('CAPABILITY_STALE', 'Executor/requirements changed during invocation; reconcile outcome without blind replay')
+            return report, identity
+        assessment, initial_identity = recheck_context()
+
     body = blob if blob is not None else compile_blob(cpp_src, cflags)
     load = blob_seeds(body, base)
     rows, allok = [], True
     for c in cases:
+        if executor_context is not None:
+            recheck_context()
         seeds = load + list(c.get("seeds", []))
         got = invoke(fn=base, regs=c.get("regs", {}), seeds=seeds,
                      reads=c.get("reads", ["pc"]), steps=c.get("steps", steps))
+        if executor_context is not None:
+            recheck_context()
         exp = c.get("expect", {})
         clean = True
         if clean_pc is not None and "pc" in exp:
@@ -138,13 +170,16 @@ def differential(title, cases, invoke, cpp_src=None, blob=None, base=0x20004000,
 
     if print_report:
         print("=== %s [differential: OUR recompiled C++ vs stock] blob=%dB ===" % (title, len(body)))
+        if assessment is not None:
+            print('  Capability context:', assessment['manifest_sha256'],
+                  'requirements:', assessment['requirements_sha256'], '(declarations checked; runtime not authenticated)')
         for i, (name, got, exp, match) in enumerate(rows, 1):
             shown = {k: (hex(got.get(k)) if isinstance(got.get(k), int) else got.get(k)) for k in exp}
             print("  W%d %-12s got=%s [expect=%s] %s" % (i, name, shown, exp, "OK" if match else "FAIL"))
         print("  OUR RECOMPILED == STOCK:", allok)
         if not allok:
-            print("  >> NOT equivalent (R80): our C++ differs from the stock. "
-                  "Fix the transcription, do not promote.")
+            print("  >> Observed mismatch: review reconstruction, ABI, initial state and bench configuration. "
+                  "Do not promote or infer an exclusive fault cause.")
     return allok
 
 

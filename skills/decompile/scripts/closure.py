@@ -7,8 +7,9 @@ carry the most leverage. Nothing here establishes semantic truth or promotes a g
 """
 import argparse
 from collections import deque
+import hashlib
 import json
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import sys
 
 GRADES = {'G0', 'G1', 'G2', 'G3', 'G4-stock', 'G4-recon', 'G4'}
@@ -183,6 +184,86 @@ def build_report(callgraph, grades, limit=50):
     }
 
 
+def manifest_digest(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True, ensure_ascii=False,
+                                     allow_nan=False).encode('utf-8')).hexdigest()
+
+
+def export_context(provenance):
+    return manifest_digest({'target': provenance['target'], 'producer': provenance['producer']})
+
+
+def evidence_path(root, relative):
+    require(text(relative), 'PATH', 'A project-relative evidence path is required')
+    portable = relative.replace('\\', '/')
+    part = Path(portable)
+    win = PureWindowsPath(relative)
+    require(not part.is_absolute() and not win.drive and not win.root and '..' not in part.parts
+            and ':' not in portable and '.harness' not in {x.casefold() for x in part.parts},
+            'PATH', 'Evidence must stay inside the project and outside harness state')
+    path = (root / part).resolve()
+    require(path.is_relative_to(root) and '.harness' not in {x.casefold() for x in path.relative_to(root).parts},
+            'PATH', 'Evidence resolves outside the authorized project')
+    return path
+
+
+def bound_report(project, graph_file, grade_file, provenance, limit=50):
+    """Optional physical provenance for an existing export; no exporter or target interpreter."""
+    root = Path(project).resolve()
+    require(root.is_dir(), 'PATH', 'Project root is missing')
+    required = {'format', 'target', 'callgraph', 'grades', 'producer', 'edges', 'export_context_sha256'}
+    require(isinstance(provenance, dict) and set(provenance) == required and
+            provenance['format'] == 'decompile-provenance-v1', 'PROVENANCE', 'Use decompile-provenance-v1')
+    producer = provenance['producer']
+    require(isinstance(producer, dict) and set(producer) == {'name', 'version', 'settings'} and
+            text(producer['name']) and text(producer['version']) and isinstance(producer['settings'], dict),
+            'PROVENANCE', 'Declare producer name, version and actual settings')
+    require(provenance['export_context_sha256'] == export_context(provenance), 'PROVENANCE_STALE',
+            'Target or producer context changed since this export declaration; reassess/re-export')
+    witnesses = []
+    def receipt(value):
+        require(isinstance(value, dict) and set(value) == {'path', 'sha256'} and text(value['sha256']),
+                'PROVENANCE', 'Evidence receipts need path and SHA-256')
+        path = evidence_path(root, value['path'])
+        require(path.is_file() and hashlib.sha256(path.read_bytes()).hexdigest() == value['sha256'],
+                'PROVENANCE_STALE', 'A declared evidence file is missing or changed')
+        witnesses.append((path, value['sha256']))
+        return path
+    receipt(provenance['target'])
+    graph_path, grade_path = receipt(provenance['callgraph']), receipt(provenance['grades'])
+    def supplied(value):
+        path = Path(value)
+        return (path if path.is_absolute() else root / path).resolve()
+    require(supplied(graph_file) == graph_path and supplied(grade_file) == grade_path,
+            'PROVENANCE', 'Selected graph/grades do not match the bound export files')
+    callgraph, grades = load_json(graph_path), load_json(grade_path)
+    result = build_report(callgraph, grades, limit)
+    all_edges = {(caller, callee) for caller, targets in callgraph['graph'].items() for callee in targets or []}
+    rows = provenance['edges']
+    require(isinstance(rows, list), 'PROVENANCE', 'Edge provenance must be a list')
+    seen, counts = set(), {'inferred': 0, 'resolved': 0, 'observed': 0}
+    for row in rows:
+        require(isinstance(row, dict) and set(row) == {'caller', 'callee', 'basis', 'evidence'} and
+                text(row['caller']) and text(row['callee']) and isinstance(row['basis'], str) and row['basis'] in counts,
+                'PROVENANCE', 'Declare existing edge and inferred/resolved/observed origin')
+        pair = (row['caller'], row['callee'])
+        require(pair in all_edges and pair not in seen and isinstance(row['evidence'], list) and row['evidence'],
+                'PROVENANCE', 'Each annotated graph edge needs unique, current evidence')
+        seen.add(pair)
+        counts[row['basis']] += 1
+        for ref in row['evidence']:
+            receipt(ref)
+    require(all(path.is_file() and hashlib.sha256(path.read_bytes()).hexdigest() == checksum for path, checksum in witnesses),
+            'PROVENANCE_STALE', 'An input changed during report construction')
+    result['provenance'] = {'manifest_sha256': manifest_digest(provenance),
+                            'export_context_sha256': provenance['export_context_sha256'],
+                            'target_sha256': provenance['target']['sha256'], 'physical_hashes_match': True,
+                            'producer': producer, 'edge_basis_counts': counts,
+                            'edge_annotation_coverage': {'annotated': len(seen), 'total': len(all_edges)},
+                            'runtime_edges_authenticated': False, 'producer_execution_authenticated': False}
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--project', required=True)
@@ -191,6 +272,7 @@ def main():
     report.add_argument('--callgraph', required=True, help='decompile-callgraph-v1 JSON (explicit path)')
     report.add_argument('--grades', required=True, help='decompile-grades-v1 JSON (explicit path)')
     report.add_argument('--limit', type=int, default=50)
+    report.add_argument('--provenance', help='Optional decompile-provenance-v1 JSON; does not export or promote')
     args = parser.parse_args()
     try:
         root = Path(args.project).resolve()
@@ -198,9 +280,13 @@ def main():
         require(args.limit >= 0, 'INPUT', 'limit must be non-negative')
         graph_path = Path(args.callgraph)
         grade_path = Path(args.grades)
-        result = build_report(load_json(graph_path if graph_path.is_absolute() else root / graph_path),
-                              load_json(grade_path if grade_path.is_absolute() else root / grade_path),
-                              args.limit)
+        if args.provenance:
+            provenance_path = Path(args.provenance)
+            result = bound_report(root, graph_path, grade_path,
+                                  load_json(provenance_path if provenance_path.is_absolute() else root / provenance_path), args.limit)
+        else:
+            result = build_report(load_json(graph_path if graph_path.is_absolute() else root / graph_path),
+                                  load_json(grade_path if grade_path.is_absolute() else root / grade_path), args.limit)
         print(json.dumps({'ok': True, 'result': result}, ensure_ascii=True))
         return 0 if result['passed'] else 3
     except (ClosureError, OSError, ValueError, RecursionError) as error:
