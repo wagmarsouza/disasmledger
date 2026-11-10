@@ -12,6 +12,13 @@ Default-branch install commands below now discover this preview; use a tagged re
 reproducibility. Publishing does not install tools or migrate a project. See
 [the refinement guide](docs/toolchain-refinements.md) and the release test limits.
 
+## Local 2.4 development preview
+
+The isolated preview adds optional neutral preservation witnesses for VeriMission 8.3 and a
+[read-only freshness view](skills/renode-bench/references/preservation.md). Existing census math,
+stock/recon separation and legacy APIs remain. No installation or publication has occurred.
+The public installation commands below still refer to the previously published release.
+
 ## Installation
 
 With Node.js and the [Skills CLI](https://skills.sh/):

@@ -3,7 +3,7 @@ name: decompile
 description: "DisasmLedger Decompile: an evidence-bound, end-to-end playbook for recompilation-grade decompilation and disassembly — a stage pipeline, tool-per-stage routing, an explicit grade ladder, and differential-test scheduling that composes the binary-analysis-profile and renode-bench skills."
 metadata:
   display-name: DisasmLedger Decompile
-  version: "0.6.0-dev"
+  version: "0.7.0-dev"
 ---
 
 # DisasmLedger Decompile
@@ -90,3 +90,7 @@ display limits. It reuses closure totals, excludes G0 from the live denominator 
 G4-recon, ambiguous legacy G4 and missing grades distinct. Presentation never promotes a grade,
 changes the denominator, verifies semantics or replaces native reconciliation. No default project
 path, hardcoded census size, message sending, schedule or host installation is introduced.
+
+## Optional preservation freshness
+
+`verimission_adapter.py preservation-report` reads bound witness results and retains the historical grade separately from current evidence. Stock-only is never a reconstruction claim. For the contract, read [preservation evidence](references/preservation.md). Native 8.3 owns the gate, not this view.

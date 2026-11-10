@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.4.0 development preview — not installed or published
+
+- Renode Bench 1.3.0-dev adds opt-in fresh neutral witness export with explicit reset, stable case IDs, stock/corpus/context bindings and unchanged boolean differential API.
+- Decompile 0.7.0-dev adds a read-only preservation freshness view; historical G4-stock and G4-recon remain separate and no grade promotion is authorized.
+- Added a native VeriMission 8.3 integration pilot using synthetic data and a fake executor, plus focused regression tests.
+- Preserved census calculations/presentation, existing 8.2 inventory adapter/reconciler boundaries and all previous APIs.
+
 ## v2.3.0-rc.1 — 2026-11-08 (public preview)
 
 - Decompile 0.6.0-dev adds read-only monochrome census bars over existing closure validation/totals.
