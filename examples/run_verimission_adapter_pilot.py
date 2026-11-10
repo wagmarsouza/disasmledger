@@ -167,10 +167,10 @@ for cycle in range(int(sys.argv[1]) + 1):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--harness', required=True, type=Path, help='Explicit path to the original local VeriMission 8.2 scripts/harness.py')
+    parser.add_argument('--harness', required=True, type=Path, help='Explicit path to VeriMission 8.2 or 8.3 scripts/harness.py')
     args = parser.parse_args()
     harness = load('native_verimission82_adapter_pilot', args.harness.resolve())
-    assert harness.VERSION == '8.2', 'This pilot targets the 8.2 observation contract'
+    assert harness.VERSION in ('8.2', '8.3'), 'This pilot targets the inherited 8.2 observation contract in 8.2/8.3'
     adapter = load('native_adapter_pilot', SCRIPTS / 'verimission_adapter.py')
     results = {}
     for name in ('success', 'unmarked_promotion', 'justified_retraction', 'unexplained_regression',
