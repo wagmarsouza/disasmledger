@@ -1,4 +1,4 @@
-# Reconstrução qualificada — decompile + Control 8.4
+# Decompile 2.0 — reconstrução qualificada + Control 8.4
 
 Extensão opcional, sem trocar as APIs anteriores de closure, proveniência, scheduler, adapter8.2
 ou barras declaradas. As regras abaixo são o gate adicional de contagem qualificada, não uma

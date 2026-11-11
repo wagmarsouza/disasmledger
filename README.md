@@ -12,12 +12,18 @@ Default-branch install commands below now discover this preview; use a tagged re
 reproducibility. Publishing does not install tools or migrate a project. See
 [the refinement guide](docs/toolchain-refinements.md) and the release test limits.
 
-## Local 2.4 development preview
+## Decompile 2.0
+
+The current component release adds [evidence-qualified completion](docs/release-decompile-v2.0.0.md)
+and live Control8.4-backed counts while retaining legacy helpers. Tag: `decompile-v2.0.0`;
+this is independent of older repository-wide version numbers. Publishing installs nothing.
+
+## Included preservation refinements
 
 The isolated preview adds optional neutral preservation witnesses for VeriMission 8.3 and a
 [read-only freshness view](skills/renode-bench/references/preservation.md). Existing census math,
-stock/recon separation and legacy APIs remain. No installation or publication has occurred.
-The public installation commands below still refer to the previously published release.
+stock/recon separation and legacy APIs remain. The current release includes these already-qualified
+resources; publication does not install them or migrate projects.
 
 ## Installation
 
@@ -83,7 +89,8 @@ python -B .\skills\renode-bench\scripts\differential.py --selftest
 
 ## Decompile
 
-Read [the skill](skills/decompile/SKILL.md) and the references in `skills/decompile/references/` (methodology, toolchain routing, and differential testing). It is an orchestrator: it does not disassemble, execute, or grade anything itself. It distinguishes G0 discarded, G1 raw, G2 semantic hypothesis, G3 compiles, G4-stock original observations, and G4-recon reconstruction comparisons, and composes `binary-analysis-profile` and `renode-bench` for the evidence steps.
+Read [the skill](skills/decompile/SKILL.md) and the references in `skills/decompile/references/` (methodology, toolchain routing, and differential testing). It orchestrates external tools. Legacy closure/presentation helpers are read-only; the optional
+`completion.py` gate invokes explicitly approved compiler/executor commands for Control8.4 observations. It distinguishes G0 discarded, G1 raw, G2 semantic hypothesis, G3 compiles, G4-stock original observations, and G4-recon reconstruction comparisons, and composes `binary-analysis-profile` and `renode-bench` for the evidence steps.
 
 The closure scheduler consumes a declared call graph and a declared grade map — produced by your own tools, in the formats shown in `skills/decompile/assets/templates/` — and reports which units are differentially testable now (their callee-closure is already reconstructed) and which undone helpers carry the most leverage:
 
@@ -136,4 +143,4 @@ The name DisasmLedger reflects the link between bytes, observations, and auditab
 The optional [verified completion adapter](docs/verified-completion.md) composes Control 8.4's
 neutral measurement protocol with source/build/execution/control gates. Current qualified counts
 and stale proof are distinct from declared grades. Existing helpers remain available; the new
-AST gate has an explicit optional pycparser dependency. This preview is not installed or published.
+AST gate has an explicit optional pycparser dependency. See the component release notes for downloads; publication does not install it.

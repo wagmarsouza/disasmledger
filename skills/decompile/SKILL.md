@@ -2,8 +2,8 @@
 name: decompile
 description: "DisasmLedger Decompile: an evidence-bound, end-to-end playbook for recompilation-grade decompilation and disassembly — a stage pipeline, tool-per-stage routing, an explicit grade ladder, and differential-test scheduling that composes the binary-analysis-profile and renode-bench skills."
 metadata:
-  display-name: DisasmLedger Decompile
-  version: "0.8.0-preview"
+  display-name: DisasmLedger Decompile 2.0
+  version: "2.0.0"
 ---
 
 # DisasmLedger Decompile
@@ -66,7 +66,7 @@ the optional `report --provenance FILE` binding. Reuse external exporters and th
 identity rules. The helper checks physical receipts and declared edge origins, not exporter
 execution or runtime truth. It never clears unknown calls, changes grades or grants authority.
 An inferred/resolved/observed label alone cannot promote a result. No new engine, identity system,
-census reconciler or schedule is introduced. This preview has not been installed or published.
+census reconciler or schedule is introduced. Publishing this release does not install or activate a skill.
 
 ## Optional VeriMission 8.2 observation adapter
 

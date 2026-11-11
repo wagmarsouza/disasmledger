@@ -1,5 +1,14 @@
 # Changelog
 
+## Decompile 2.0.0 — 2026-11-11 (component tag decompile-v2.0.0)
+
+- Published the previously qualified completion pipeline, live Control8.4 census and audited counts.
+- Updated component metadata from local0.8.0-preview to the requested public2.0.0; executable
+  semantics and legacy APIs are unchanged. Older repository-wide tags are retained.
+- Included standalone/full-source ZIPs, usage guides, dependency declarations and source-bound receipts.
+- No host skill installation, project migration or execution authority is implied.
+
+
 ## Decompile 0.8.0 local preview — 2026-11-11 (not installed or published)
 
 - Added optional finite source/build/execution/control qualification for Control 8.4's neutral

@@ -1,6 +1,8 @@
 # DisasmLedger Decompile
 
-Decompile 0.3.0 orchestrates an evidence-bound reconstruction workflow with Binary Analysis Profile and Renode Bench. It routes identity, inventory, type modelling, transcription, compilation, matching, and differential testing to appropriate external tools. The bundled executable is a read-only scheduling helper.
+Decompile 2.0 orchestrates an evidence-bound reconstruction workflow with Binary Analysis Profile and Renode Bench. It routes identity, inventory, type modelling, transcription, compilation, matching, and differential testing to appropriate external tools. Legacy closure/presentation executables remain read-only. The optional completion verifier now
+invokes approved compiler/executor tools and emits neutral evidence for Control8.4; read
+[the new pipeline guide](verified-completion.md) and [release notes](release-decompile-v2.0.0.md).
 
 ## Install and invoke
 
@@ -20,7 +22,8 @@ VeriMission is an optional mission coordinator. If used, its installed version o
 
 ## Tools and requirements
 
-- Python 3.11+ and the standard library run the packaged helpers, tests, and pilots.
+- Python3.11+ and the standard library run legacy helpers. The optional verified-completion
+  AST gate and its tests additionally require pycparser (requirements-verified.txt).
 - Supply a call-graph export and a grade map in the bundled JSON formats.
 - Install only the external tools needed for the task: examples include Capstone, Ghidra/pyghidra, an appropriate cross-compiler, instruction-diff tooling, and Unicorn or Renode.
 - The differential helper currently extracts ARM Thumb `.text` with Cortex-M4 compiler defaults. It requires a target-specific `invoke` callable and review of ABI, memory placement, relocations, external references, state, and toolchain flags. It does not include a ready-to-run board or emulator backend.
