@@ -1,5 +1,18 @@
 # Changelog
 
+## Decompile 0.8.0 local preview — 2026-11-11 (not installed or published)
+
+- Added optional finite source/build/execution/control qualification for Control 8.4's neutral
+  measurements. Reused binary-analysis-profile identity and existing closure normalization.
+- Kept source representation, compilation, behavior, independence and controls separate.
+  AST signals support approved source review; keyword presence is not a completion proof.
+- Bound freshly built/executed images and discriminating healthy/bad witnesses, with explicit
+  platform origins, budgets and cache freshness. Trusted external runners remain required.
+- Added live declared/verified-now/pending/stale census bars; unchanged legacy declared APIs
+  retain G4-stock/G4-recon separation. No second ledger or implicit grade promotion.
+- Added protocol regression tests and an integrated pilot with optional real host GCC/process
+  execution. This is not universal firmware equivalence or real hardware verification.
+
 ## v2.4.0 development preview — not installed or published
 
 - Renode Bench 1.3.0-dev adds opt-in fresh neutral witness export with explicit reset, stable case IDs, stock/corpus/context bindings and unchanged boolean differential API.
