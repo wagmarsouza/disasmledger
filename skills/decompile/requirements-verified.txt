@@ -1,0 +1,2 @@
+# Optional C AST adapter for the new verified-completion pipeline; legacy helpers remain stdlib-only.
+pycparser>=2.22,<4
