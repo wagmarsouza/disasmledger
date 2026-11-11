@@ -3,7 +3,7 @@ name: renode-bench
 description: "DisasmLedger Renode Lab: prepare, run, and interpret reproducible Renode benches for authorised firmware, with traceable configuration, traces, and explicit boundaries between emulation and hardware."
 metadata:
   display-name: DisasmLedger Renode Lab
-  version: "1.2.0-dev"
+  version: "1.3.0-dev"
 ---
 
 # DisasmLedger Renode Lab
@@ -82,3 +82,7 @@ Unknown/unsupported requirements block invocation; stale context invalidates the
 No automatic fallback occurs. Do not infer VFP rejection from Unicorn's name or MMIO support from
 Renode's name. Preserve the existing authorization and profile identity rules. Legacy calls and
 the trace analyzer remain available unchanged. This preview has not been installed or published.
+
+## Optional preservation export
+
+Read [preservation evidence](references/preservation.md) when configuring an explicitly authorized VeriMission 8.3 check. The opt-in export requires explicit reset and physical stock/corpus references. The existing boolean API remains available. No result promotes a grade or authenticates a real executor.

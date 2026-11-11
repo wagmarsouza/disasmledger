@@ -163,10 +163,65 @@ def verify_bundle(project, contract, cycle, bundle):
             'reconciliation_executed': False, 'semantic_truth_verified': False, 'promotion_authorized': False}
 
 
+def preservation_report(project, graph_file, grade_file, results_file):
+    """Read-only witness freshness view; never a replacement for native 8.3 check execution."""
+    root=Path(project).resolve(strict=True)
+    paths=[closure.evidence_path(root,relative) for relative in (graph_file,grade_file,results_file)]
+    hashes={str(path.relative_to(root)):hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
+    graph,grades,report=[closure.load_json(path) for path in paths]
+    nodes,_,grade,_,_=closure.normalize(graph,grades)
+    require(isinstance(report,dict) and set(report)=={'format','run_id','context_sha256','complete','cases'} and
+            report['format']=='verimission-results-v1' and report['complete'] is True and isinstance(report['cases'],list),
+            'PRESERVATION','Expected a complete neutral witness result')
+    json.dumps(report,allow_nan=False)
+    groups={}; seen=set()
+    for row in report['cases']:
+        require(isinstance(row,dict) and text(row.get('id')) and row['id'] not in seen and '::' in row['id'],
+                'PRESERVATION','Unique UNIT::witness identifiers required')
+        seen.add(row['id']); unit,name=row['id'].split('::',1)
+        require(unit in nodes,'PRESERVATION','Witness unit is absent from the declared graph')
+        contract=row.get('contract',{})
+        require(isinstance(contract,dict) and set(contract)=={'references','witness_sha256','reset_policy'} and text(contract['reset_policy']),
+                'PRESERVATION','Reference-bound witness/reset contract required')
+        references=contract['references']
+        require(isinstance(references,dict) and {'stock','witnesses'}<=set(references), 'PRESERVATION','Stock/corpus references required')
+        for ref in references.values():
+            require(isinstance(ref,dict) and set(ref)=={'path','sha256'},'PRESERVATION','Expected a physical reference binding')
+            path=closure.evidence_path(root,ref['path'])
+            actual=hashlib.sha256(path.read_bytes()).hexdigest()
+            require(actual==ref['sha256'],'PRESERVATION','Witness, stock or context source changed')
+            hashes[ref['path']]=actual
+        corpus=closure.load_json(closure.evidence_path(root,references['witnesses']['path']))
+        require(isinstance(corpus,list),'PRESERVATION','Witness corpus must be a list')
+        witness=[case for case in corpus if isinstance(case,dict) and case.get('name')==name]
+        require(len(witness)==1 and hashlib.sha256(json.dumps(witness[0],sort_keys=True,allow_nan=False,
+                separators=(',',':')).encode()).hexdigest()==contract['witness_sha256'],
+                'PRESERVATION','Case is not the declared physical witness')
+        groups.setdefault(unit,[]).append(row)
+    require(groups,'PRESERVATION','An empty witness view is not preservation evidence')
+    units=[]
+    for unit,rows in sorted(groups.items()):
+        historical=grade.get(unit,'ungraded')
+        status='witness_match_observed' if all(r.get('status')=='pass' for r in rows) else 'needs_revalidation'
+        if historical=='G4-stock': status='stock_only_no_reconstruction_claim'
+        elif historical in {'G0','G4','ungraded'}: status='needs_revalidation'
+        units.append({'unit':unit,'historical_grade':historical,'evidence_status':status,
+                      'cases':[row['id'] for row in rows]})
+    require(all(hashlib.sha256(closure.evidence_path(root,path).read_bytes()).hexdigest()==sha for path,sha in hashes.items()),
+            'PRESERVATION','Source changed during freshness view')
+    return {'format':'disasm-preservation-view-v1','units':units,'physical_sources':hashes,
+            'promotion_authorized':False,'semantic_truth_verified':False,'reconciliation_executed':False,
+            'limit':'Declared reference freshness and witness statuses only; use the native 8.3 engine for run binding, preservation gates and audit.'}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--project', required=True)
     commands = parser.add_subparsers(dest='command', required=True)
+    preservation=commands.add_parser('preservation-report')
+    preservation.add_argument('--callgraph',required=True)
+    preservation.add_argument('--grades',required=True)
+    preservation.add_argument('--results',required=True)
     for name in ('export', 'verify'):
         command = commands.add_parser(name)
         command.add_argument('--contract', required=True)
@@ -175,6 +230,10 @@ def main():
     args = parser.parse_args()
     try:
         root = Path(args.project).resolve()
+        if args.command=='preservation-report':
+            result=preservation_report(root,args.callgraph,args.grades,args.results)
+            print(json.dumps({'ok':True,'result':result},ensure_ascii=True))
+            return 0
         contract = closure.load_json(closure.evidence_path(root, args.contract))
         cycle = closure.load_json(closure.evidence_path(root, args.input))
         result = (export_bundle if args.command == 'export' else verify_bundle)(root, contract, cycle, args.bundle)

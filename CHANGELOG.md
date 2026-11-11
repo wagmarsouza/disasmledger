@@ -1,5 +1,34 @@
 # Changelog
 
+## Decompile 2.0.0 — 2026-11-11 (component tag decompile-v2.0.0)
+
+- Published the previously qualified completion pipeline, live Control8.4 census and audited counts.
+- Updated component metadata from local0.8.0-preview to the requested public2.0.0; executable
+  semantics and legacy APIs are unchanged. Older repository-wide tags are retained.
+- Included standalone/full-source ZIPs, usage guides, dependency declarations and source-bound receipts.
+- No host skill installation, project migration or execution authority is implied.
+
+
+## Decompile 0.8.0 local preview — 2026-11-11 (not installed or published)
+
+- Added optional finite source/build/execution/control qualification for Control 8.4's neutral
+  measurements. Reused binary-analysis-profile identity and existing closure normalization.
+- Kept source representation, compilation, behavior, independence and controls separate.
+  AST signals support approved source review; keyword presence is not a completion proof.
+- Bound freshly built/executed images and discriminating healthy/bad witnesses, with explicit
+  platform origins, budgets and cache freshness. Trusted external runners remain required.
+- Added live declared/verified-now/pending/stale census bars; unchanged legacy declared APIs
+  retain G4-stock/G4-recon separation. No second ledger or implicit grade promotion.
+- Added protocol regression tests and an integrated pilot with optional real host GCC/process
+  execution. This is not universal firmware equivalence or real hardware verification.
+
+## v2.4.0 development preview — not installed or published
+
+- Renode Bench 1.3.0-dev adds opt-in fresh neutral witness export with explicit reset, stable case IDs, stock/corpus/context bindings and unchanged boolean differential API.
+- Decompile 0.7.0-dev adds a read-only preservation freshness view; historical G4-stock and G4-recon remain separate and no grade promotion is authorized.
+- Added a native VeriMission 8.3 integration pilot using synthetic data and a fake executor, plus focused regression tests.
+- Preserved census calculations/presentation, existing 8.2 inventory adapter/reconciler boundaries and all previous APIs.
+
 ## v2.3.0-rc.1 — 2026-11-08 (public preview)
 
 - Decompile 0.6.0-dev adds read-only monochrome census bars over existing closure validation/totals.

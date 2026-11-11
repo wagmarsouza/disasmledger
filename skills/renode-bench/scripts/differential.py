@@ -105,7 +105,7 @@ def distinct_expectations(cases):
 
 
 def differential(title, cases, invoke, cpp_src=None, blob=None, base=0x20004000,
-                 clean_pc=None, cflags=None, steps=60, print_report=True, executor_context=None):
+                 clean_pc=None, cflags=None, steps=60, print_report=True, executor_context=None, preservation=None):
     """Prove OUR reconstruction reproduces the stock witnesses on the bench.
 
     Exactly one of `cpp_src` (compiled here) or `blob` (a precompiled Thumb .text) is given.
@@ -127,6 +127,17 @@ def differential(title, cases, invoke, cpp_src=None, blob=None, base=0x20004000,
         raise DifferentialError("WITNESS", "need at least two witnesses (two-witness discipline)")
     if distinct_expectations(cases) < 2:
         raise DifferentialError("WITNESS", "witnesses must exercise at least two distinct outputs/branches")
+
+    recorder = None
+    if preservation is not None:
+        helper = Path(__file__).with_name('preservation_receipt.py')
+        spec = importlib.util.spec_from_file_location('disasm_preservation_receipt', helper)
+        receipt = importlib.util.module_from_spec(spec)
+        try:
+            spec.loader.exec_module(receipt)
+            recorder = receipt.Recorder(preservation, cases)
+        except (ValueError, TypeError, OSError, ImportError) as error:
+            raise DifferentialError('PRESERVATION', str(error)) from error
 
     assessment, initial_identity = None, None
     if executor_context is not None:
@@ -157,6 +168,10 @@ def differential(title, cases, invoke, cpp_src=None, blob=None, base=0x20004000,
     load = blob_seeds(body, base)
     rows, allok = [], True
     for c in cases:
+        if recorder is not None:
+            try: recorder.reset()
+            except (ValueError, OSError) as error:
+                raise DifferentialError('PRESERVATION', str(error)) from error
         if executor_context is not None:
             recheck_context()
         seeds = load + list(c.get("seeds", []))
@@ -171,6 +186,11 @@ def differential(title, cases, invoke, cpp_src=None, blob=None, base=0x20004000,
         match = clean and all(got.get(k) == v for k, v in exp.items())
         allok = allok and match
         rows.append((c.get("name", ""), got, exp, match))
+
+    if recorder is not None:
+        try: recorder.finish(rows)
+        except (ValueError, TypeError, OSError) as error:
+            raise DifferentialError('PRESERVATION', str(error)) from error
 
     if print_report:
         print("=== %s [differential: OUR recompiled C++ vs stock] blob=%dB ===" % (title, len(body)))

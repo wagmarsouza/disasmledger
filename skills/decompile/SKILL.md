@@ -2,8 +2,8 @@
 name: decompile
 description: "DisasmLedger Decompile: an evidence-bound, end-to-end playbook for recompilation-grade decompilation and disassembly — a stage pipeline, tool-per-stage routing, an explicit grade ladder, and differential-test scheduling that composes the binary-analysis-profile and renode-bench skills."
 metadata:
-  display-name: DisasmLedger Decompile
-  version: "0.6.0-dev"
+  display-name: DisasmLedger Decompile 2.0
+  version: "2.0.0"
 ---
 
 # DisasmLedger Decompile
@@ -59,14 +59,14 @@ python -B 'PATH_TO_SKILL/examples/run_pilot.py'
 
 The pilot uses only a synthetic call graph and grade map in a temporary directory. It validates the scheduling logic; it does not validate firmware, a disassembler, or real hardware.
 
-## Optional toolchain refinements — local preview
+## Optional toolchain refinements
 
 Read [references/graph-provenance.md](references/graph-provenance.md) for targeted angr routing and
 the optional `report --provenance FILE` binding. Reuse external exporters and the existing profile
 identity rules. The helper checks physical receipts and declared edge origins, not exporter
 execution or runtime truth. It never clears unknown calls, changes grades or grants authority.
 An inferred/resolved/observed label alone cannot promote a result. No new engine, identity system,
-census reconciler or schedule is introduced. This preview has not been installed or published.
+census reconciler or schedule is introduced. Publishing this release does not install or activate a skill.
 
 ## Optional VeriMission 8.2 observation adapter
 
@@ -90,3 +90,18 @@ display limits. It reuses closure totals, excludes G0 from the live denominator 
 G4-recon, ambiguous legacy G4 and missing grades distinct. Presentation never promotes a grade,
 changes the denominator, verifies semantics or replaces native reconciliation. No default project
 path, hardcoded census size, message sending, schedule or host installation is introduced.
+
+## Optional preservation freshness
+
+`verimission_adapter.py preservation-report` reads bound witness results and retains the historical grade separately from current evidence. Stock-only is never a reconstruction claim. For the contract, read [preservation evidence](references/preservation.md). Native 8.3 owns the gate, not this view.
+
+
+## Evidence-qualified completion — optional Control 8.4
+
+Read [verified completion](references/verified-completion.md) before asserting current reconstructed
+counts. Adopt five gates: representation, compilation, behavior, independence and controls. Source
+structure is reviewed, not inferred from keywords. A valid measurement is not mission completion.
+`completion.py` emits observations; only the harness seals quantities at close and invalidates them
+when proof changes. Use live `census_bars.py --harness ...`; never turn an edited grade map into proof.
+Legacy declared APIs remain available. No installation, publishing, automatic mission revision or
+universal semantic guarantee is granted by this release.
