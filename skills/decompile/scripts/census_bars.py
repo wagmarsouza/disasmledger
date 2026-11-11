@@ -45,6 +45,19 @@ def bar(count, total, width=30, fill='█', empty='▒'):
 
 
 def render(view, width=30, ascii_only=False):
+    if view['format']=='disasm-qualified-census-v1':
+        total=view['denominator'];fill,empty=('#','.') if ascii_only else ('█','▒')
+        lines=[render(view['declared'],width,ascii_only),'',
+               'Current qualified completion (live native engine; closed proof only)']
+        labels=[('Declared G3/recon',view['declared']['declared_compiled_or_compared']),
+                ('Verified now',view['counts']['verified']),('Pending',view['counts']['pending']),
+                ('Stale',view['counts']['stale'])]
+        for label,count in labels:
+            ratio=f'{count}/{total}' if total else 'N/A'
+            lines.append(f'{label:<20} {bar(count,total,width,fill,empty)} {ratio}')
+        lines.append('Declared overlaps the evidence rows; verified + pending + stale partition the live universe.')
+        lines.append('Historical grades are unchanged. Evidence scope is not universal semantic proof.')
+        return '\n'.join(lines)
     # Validate even an all-G0 view; display options never alter the census.
     bar(0, 0, width)
     total = view['denominator']
@@ -75,6 +88,7 @@ def main():
     parser.add_argument('--width', type=int, default=30, help='Bar width, 1..200 characters; counts are unchanged')
     parser.add_argument('--ascii', action='store_true', help='Use # and . instead of Unicode blocks')
     parser.add_argument('--json', action='store_true', help='Return the same display data as structured JSON')
+    parser.add_argument('--harness', help='Explicit trusted Control 8.4 executor; query live sealed evidence instead of trusting a view file')
     args = parser.parse_args()
     try:
         root = Path(args.project).resolve()
@@ -84,6 +98,14 @@ def main():
             path = Path(value)
             return path if path.is_absolute() else root / path
         view = summarize(closure.load_json(supplied(args.callgraph)), closure.load_json(supplied(args.grades)))
+        if args.harness:
+            spec=importlib.util.spec_from_file_location('live_qualified_census',Path(__file__).with_name('qualified_census.py'))
+            qualified=importlib.util.module_from_spec(spec);spec.loader.exec_module(qualified)
+            graph_path=closure.evidence_path(root,args.callgraph);grade_path=closure.evidence_path(root,args.grades)
+            native,reader_sha=qualified.query(root,args.harness)
+            view=qualified.summarize(closure.load_json(graph_path),closure.load_json(grade_path),native,
+                {'path':graph_path.relative_to(root).as_posix(),'sha256':__import__('hashlib').sha256(graph_path.read_bytes()).hexdigest()})
+            view['harness_reader_sha256']=reader_sha
         if args.json:
             print(json.dumps({'ok': True, 'result': view}, ensure_ascii=True))
         else:

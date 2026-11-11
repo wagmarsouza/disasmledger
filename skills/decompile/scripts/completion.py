@@ -32,7 +32,7 @@ class Verifier:
         need(re.fullmatch('[a-f0-9]{64}',context) is not None,'Current context hash required')
         self.run_id=run_id;self.context=context;self.config_path=self.path(config_file)
         self.config=closure.load_json(self.config_path);v=self.config
-        need(isinstance(v,dict) and set(v)=={'format','target','universe','work_pattern','budget_seconds',
+        need(isinstance(v,dict) and set(v)=={'format','target','universe','callgraph','work_pattern','budget_seconds',
              'tool_timeout_seconds','profile','tools','units'} and v['format']=='disasm-completion-config-v1','Use the exact completion config')
         need(type(v['budget_seconds']) is int and 1<=v['budget_seconds']<=3600 and
              type(v['tool_timeout_seconds']) is int and 1<=v['tool_timeout_seconds']<=1800,'Declare finite verifier/tool budgets')
@@ -51,6 +51,10 @@ class Verifier:
         need(len(set(excluded))==len(excluded) and set(excluded)<=set(self.units),'Invalid exclusions')
         self.live=set(self.units)-set(excluded)
         need(isinstance(v['units'],dict) and set(v['units'])==self.live,'Domain inputs must match the full live inventory')
+        self.graph_ref=self.ref(self.path(v['callgraph']))
+        self.graph=closure.load_json(self.bound(self.graph_ref))
+        nodes,self.edges,_,self.unknown,self.inventory_complete=closure.normalize(self.graph,{'format':'decompile-grades-v1','grades':{}})
+        need(nodes==set(self.units),'Original graph and approved unit universe differ')
         p=v['profile'];need(isinstance(p,dict) and set(p)=={'reviewers','execution_kind','platform_images','allowed_external_calls'},'Use the explicit source/execution profile')
         need(p['execution_kind'] in ('pc-trace','process-image') and isinstance(p['reviewers'],list) and p['reviewers'],
              'Declare execution kind and approved independent reviewers')
@@ -138,13 +142,16 @@ class Verifier:
         need(unit['id']==uid and self.profile.manifest_digest(checked['identity'])==original['identity'],'Unit identity differs from binary-profile/universe')
         review=closure.load_json(self.bound(refs['source_review']))
         need(isinstance(review,dict) and set(review)=={'format','unit','source_sha256','representation','reviewer',
-            'dependencies_complete','dependencies','acknowledged_signals','indirect_resolutions','build_inputs_sha256'} and
+            'dependencies_complete','dependencies','acknowledged_signals','indirect_resolutions','build_inputs_sha256','callgraph_sha256'} and
             review['format']=='disasm-source-qualification-v1','Use a source-bound independent qualification')
         need(review['unit']==uid and review['source_sha256']==refs['deliverable']['sha256'],'Source review is stale or for another unit')
         need(review['reviewer'] in self.config['profile']['reviewers'] and review['representation']=='structured-source',
              'Descriptor, transliteration, hybrid or unreviewed representation cannot count as structured reconstruction')
         need(review['dependencies_complete'] is True and isinstance(review['dependencies'],list) and
              set(review['dependencies'])==set(original['depends_on']),'Unknown/inconsistent dependencies cannot qualify')
+        need(self.inventory_complete and uid not in self.unknown and set(self.edges[uid] or [])==set(original['depends_on']),
+             'Original call closure is incomplete or differs from the approved dependencies')
+        need(review['callgraph_sha256']==self.graph_ref['sha256'],'Source qualification does not cover the current original graph')
         build_inputs={path:sha(self.path(path)) for path in u['build_inputs']}
         need(review['build_inputs_sha256']==digest(build_inputs),'Source review does not cover current headers/linker/support inputs')
         for path,checksum in build_inputs.items():refs['build-input-'+digest(path)]={'path':path,'sha256':checksum}
@@ -153,7 +160,8 @@ class Verifier:
              'Physical discriminating witness corpus required')
         cases=corpus['cases'];need(len(cases)>=2 and len({r['id'] for r in cases})==len(cases) and
             len({digest(r['input']) for r in cases})>=2,'At least two distinct stable witness inputs required')
-        refs.update(target_profile=self.config['target'],universe=self.config['universe'],verifier_context=self.context_ref)
+        refs.update(target_profile=self.config['target'],universe=self.config['universe'],verifier_context=self.context_ref,
+                    callgraph=self.graph_ref)
         return {'refs':refs,'review':review,'corpus':corpus,'symbol':u['symbol'],'unit':checked,
                 'signature':digest({'refs':refs,'context':self.context_value,'identity':original['identity']})}
 

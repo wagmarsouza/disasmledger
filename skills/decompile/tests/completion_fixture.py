@@ -61,17 +61,19 @@ class Fixture:
         self.universe={'format':'verimission-universe-v1','units':[{'id':'U1','identity':identity,
             'deliverable':'src/U1.c','depends_on':[]}],'excluded':[]}
         self.write('universe.json',self.universe)
+        self.write('callgraph.json',{'format':'decompile-callgraph-v1','graph':{'U1':[]},
+            'unknown_calls':[],'inventory_complete':True})
         self.review={'format':'disasm-source-qualification-v1','unit':'U1','source_sha256':sha(self.root/'src/U1.c'),
             'representation':'structured-source','reviewer':'independent-review-fixture','dependencies_complete':True,
             'dependencies':[],'acknowledged_signals':[],'indirect_resolutions':{},
-            'build_inputs_sha256':hashlib.sha256(b'{}').hexdigest()}
+            'build_inputs_sha256':hashlib.sha256(b'{}').hexdigest(),'callgraph_sha256':sha(self.root/'callgraph.json')}
         self.write('reviews/U1.json',self.review)
         self.corpus={'format':'disasm-witnesses-v1','cases':[{'id':'one','input':1,'purpose':'first input'},
                                                          {'id':'two','input':2,'purpose':'different input'}]}
         self.write('witnesses/U1.json',self.corpus)
         tool={'executable_sha256':sha(Path(sys.executable)),'files':{'tool.py':sha(self.root/'tool.py')}}
         self.config={'format':'disasm-completion-config-v1','target':self.ref('target.json'),
-            'universe':self.ref('universe.json'),'work_pattern':'completion/{run}',
+            'universe':self.ref('universe.json'),'callgraph':'callgraph.json','work_pattern':'completion/{run}',
             'budget_seconds':60,'tool_timeout_seconds':10,
             'profile':{'reviewers':['independent-review-fixture'],'execution_kind':'pc-trace',
                        'platform_images':{},'allowed_external_calls':[]},
