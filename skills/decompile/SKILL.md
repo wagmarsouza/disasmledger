@@ -59,7 +59,7 @@ python -B 'PATH_TO_SKILL/examples/run_pilot.py'
 
 The pilot uses only a synthetic call graph and grade map in a temporary directory. It validates the scheduling logic; it does not validate firmware, a disassembler, or real hardware.
 
-## Optional toolchain refinements — local preview
+## Optional toolchain refinements
 
 Read [references/graph-provenance.md](references/graph-provenance.md) for targeted angr routing and
 the optional `report --provenance FILE` binding. Reuse external exporters and the existing profile
@@ -104,4 +104,4 @@ structure is reviewed, not inferred from keywords. A valid measurement is not mi
 `completion.py` emits observations; only the harness seals quantities at close and invalidates them
 when proof changes. Use live `census_bars.py --harness ...`; never turn an edited grade map into proof.
 Legacy declared APIs remain available. No installation, publishing, automatic mission revision or
-universal semantic guarantee is granted by this preview.
+universal semantic guarantee is granted by this release.

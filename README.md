@@ -6,11 +6,10 @@
 
 Skills for traceable binary analysis and firmware test benches. The project contains three independent skills: `binary-analysis-profile` organises target identity, address maps, analysis units, and witnesses; `renode-bench` guides the creation of a Renode bench and the interpretation of program-counter traces; `decompile` orchestrates a staged, grade-gated reconstruction workflow over the other two and schedules work by call-graph closure. They can be used separately or together.
 
-**Public preview 2.3.0:** optional provenance, executor capability gating, the native VeriMission 8.2
-adapter and read-only census bars are available in [v2.3.0-rc.1](docs/release-v2.3.0-rc.1.md).
-Default-branch install commands below now discover this preview; use a tagged release for
-reproducibility. Publishing does not install tools or migrate a project. See
-[the refinement guide](docs/toolchain-refinements.md) and the release test limits.
+**Current component release: [Decompile 2.0](docs/release-decompile-v2.0.0.md).**
+The earlier repository-wide [2.3 preview](docs/release-v2.3.0-rc.1.md) remains available.
+Default-branch discovery now includes Decompile 2.0; use its component tag for reproducibility.
+Publishing does not install tools or migrate a project. See the release's actual test limits.
 
 ## Decompile 2.0
 
@@ -138,7 +137,7 @@ publication or live migration has been performed. See [verification](docs/verimi
 The name DisasmLedger reflects the link between bytes, observations, and auditable conclusions. The logo was created for this project.
 
 
-## Local preview: evidence-qualified reconstruction
+## Evidence-qualified reconstruction
 
 The optional [verified completion adapter](docs/verified-completion.md) composes Control 8.4's
 neutral measurement protocol with source/build/execution/control gates. Current qualified counts
