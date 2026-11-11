@@ -129,3 +129,11 @@ publication or live migration has been performed. See [verification](docs/verimi
 - This repository does not include a licence file. Public availability alone does not grant general permission to redistribute or modify the work; selecting a licence requires an explicit decision by the author.
 
 The name DisasmLedger reflects the link between bytes, observations, and auditable conclusions. The logo was created for this project.
+
+
+## Local preview: evidence-qualified reconstruction
+
+The optional [verified completion adapter](docs/verified-completion.md) composes Control 8.4's
+neutral measurement protocol with source/build/execution/control gates. Current qualified counts
+and stale proof are distinct from declared grades. Existing helpers remain available; the new
+AST gate has an explicit optional pycparser dependency. This preview is not installed or published.

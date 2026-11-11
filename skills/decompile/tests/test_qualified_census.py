@@ -2,6 +2,9 @@
 import importlib.util
 from pathlib import Path
 import unittest
+from unittest.mock import patch
+import subprocess
+import tempfile
 
 def load(name):
     p=Path(__file__).resolve().parents[1]/'scripts'/(name+'.py')
@@ -19,6 +22,12 @@ def data():
     return graph,grades,metric,ref
 
 class QualifiedCensusTests(unittest.TestCase):
+    def test_timeout_does_not_fall_back_to_declared_grades(self):
+        q=load('qualified_census')
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);script=root/'engine.py';script.write_text('# synthetic')
+            with patch.object(q.subprocess,'run',side_effect=subprocess.TimeoutExpired('engine',120)):
+                with self.assertRaisesRegex(ValueError,'timed out'):q.query(root,script)
     def test_declared_and_verified_pending_stale_are_separate(self):
         g,d,m,ref=data();v=load('qualified_census').summarize(g,d,m,ref)
         self.assertEqual(v['counts'],{'verified':1,'pending':1,'stale':1,'excluded':0})

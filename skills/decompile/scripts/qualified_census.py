@@ -15,8 +15,11 @@ closure=sibling('closure')
 
 def query(project,harness):
     root=Path(project).resolve(strict=True);script=Path(harness).resolve(strict=True)
-    result=subprocess.run([sys.executable,'-B',str(script),'--project',str(root),'measurement-report'],
-        shell=False,capture_output=True,text=True,encoding='utf-8',timeout=120)
+    try:
+        result=subprocess.run([sys.executable,'-B',str(script),'--project',str(root),'measurement-report'],
+            shell=False,capture_output=True,text=True,encoding='utf-8',timeout=120)
+    except subprocess.TimeoutExpired:
+        raise ValueError('Live measurement query timed out; no fallback to declared grades') from None
     if result.returncode:raise ValueError('Native engine refused current measurement view; no fallback to declared grades')
     value=json.loads(result.stdout)
     if value.get('ok') is not True:raise ValueError('Native engine did not provide a current view')

@@ -3,7 +3,7 @@ name: decompile
 description: "DisasmLedger Decompile: an evidence-bound, end-to-end playbook for recompilation-grade decompilation and disassembly — a stage pipeline, tool-per-stage routing, an explicit grade ladder, and differential-test scheduling that composes the binary-analysis-profile and renode-bench skills."
 metadata:
   display-name: DisasmLedger Decompile
-  version: "0.7.0-dev"
+  version: "0.8.0-preview"
 ---
 
 # DisasmLedger Decompile
@@ -94,3 +94,14 @@ path, hardcoded census size, message sending, schedule or host installation is i
 ## Optional preservation freshness
 
 `verimission_adapter.py preservation-report` reads bound witness results and retains the historical grade separately from current evidence. Stock-only is never a reconstruction claim. For the contract, read [preservation evidence](references/preservation.md). Native 8.3 owns the gate, not this view.
+
+
+## Evidence-qualified completion — optional Control 8.4
+
+Read [verified completion](references/verified-completion.md) before asserting current reconstructed
+counts. Adopt five gates: representation, compilation, behavior, independence and controls. Source
+structure is reviewed, not inferred from keywords. A valid measurement is not mission completion.
+`completion.py` emits observations; only the harness seals quantities at close and invalidates them
+when proof changes. Use live `census_bars.py --harness ...`; never turn an edited grade map into proof.
+Legacy declared APIs remain available. No installation, publishing, automatic mission revision or
+universal semantic guarantee is granted by this preview.

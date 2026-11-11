@@ -101,7 +101,11 @@ def main():
         if args.harness:
             spec=importlib.util.spec_from_file_location('live_qualified_census',Path(__file__).with_name('qualified_census.py'))
             qualified=importlib.util.module_from_spec(spec);spec.loader.exec_module(qualified)
-            graph_path=closure.evidence_path(root,args.callgraph);grade_path=closure.evidence_path(root,args.grades)
+            def bound_input(value):
+                path=supplied(value).resolve()
+                closure.require(path.is_relative_to(root), 'PATH', 'Integrated inputs must remain inside the project')
+                return closure.evidence_path(root,path.relative_to(root).as_posix())
+            graph_path=bound_input(args.callgraph);grade_path=bound_input(args.grades)
             native,reader_sha=qualified.query(root,args.harness)
             view=qualified.summarize(closure.load_json(graph_path),closure.load_json(grade_path),native,
                 {'path':graph_path.relative_to(root).as_posix(),'sha256':__import__('hashlib').sha256(graph_path.read_bytes()).hexdigest()})
