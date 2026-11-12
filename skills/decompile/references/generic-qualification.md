@@ -1,6 +1,7 @@
 # Decompile 3.0 — generic gates, explicit target profiles
 
-Local preview, not installed or published. The historical completion/closure/census/preservation
+Decompile3.0 component release. Publishing does not install tools or migrate a mission.
+The historical completion/closure/census/preservation
 commands remain. This layer adds a generic contract and reuses the existing C execution engine,
 canonical binary identity helper and native Control8.4 measurement/audit protocol. It introduces
 no second ledger, queue, background loop or automatic mission revision.

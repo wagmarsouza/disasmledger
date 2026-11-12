@@ -1,8 +1,10 @@
-# Decompile3.0 — local preview
+# Decompile3.0 — qualification history
 
 The generic qualification core is in the [skill](../skills/decompile/SKILL.md), with the full
-[contract/usage guide](../skills/decompile/references/generic-qualification.md). No installation,
-remote publication or automatic migration of existing missions was performed.
+[contract/usage guide](../skills/decompile/references/generic-qualification.md).
+This document records the local qualification that preceded the
+[3.0 component release](release-decompile-v3.0.0.md). Publishing does not install tools
+or automatically migrate existing missions.
 
 New: fixed analytical/mechanical/recompilable/independent-validated categories; strict target
 profiles; source-bound recovery review; six non-compensating gates; original/candidate/closure/

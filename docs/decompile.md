@@ -1,8 +1,10 @@
 # DisasmLedger Decompile
 
-Decompile 2.0 orchestrates an evidence-bound reconstruction workflow with Binary Analysis Profile and Renode Bench. It routes identity, inventory, type modelling, transcription, compilation, matching, and differential testing to appropriate external tools. Legacy closure/presentation executables remain read-only. The optional completion verifier now
-invokes approved compiler/executor tools and emits neutral evidence for Control8.4; read
-[the new pipeline guide](verified-completion.md) and [release notes](release-decompile-v2.0.0.md).
+Decompile 3.0 orchestrates an evidence-bound reconstruction workflow with Binary Analysis Profile and Renode Bench. It routes identity, inventory, type modelling, transcription, compilation, matching, and differential testing to appropriate external tools. Legacy closure/presentation executables remain read-only. The generic qualification verifier adds fixed categories and target profiles;
+read the [generic guide](../skills/decompile/references/generic-qualification.md) and
+[3.0 release notes](release-decompile-v3.0.0.md). The compatible
+[completion pipeline](verified-completion.md) remains available. Native Control8.4 retains
+mission/close/audit authority; no installation or migration is performed by publishing.
 
 ## Install and invoke
 

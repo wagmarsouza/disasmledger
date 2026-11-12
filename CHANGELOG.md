@@ -1,5 +1,28 @@
 # Changelog
 
+## Decompile 3.0.0 — 2026-11-12 (component tag decompile-v3.0.0)
+
+### Added
+
+- Generic D-a..D-f qualification with predeclared analysis, mechanical-translation,
+  recompilable and independent-validated categories; only the last can qualify reconstructed counts.
+- Strict target profiles and examples for ARM Thumb C, native ELF x86_64 C, analytical artifacts
+  and an external LLVM-equivalence adapter contract. No universal prover or target tool is bundled.
+- Source-bound recovery reviews, explicit dependency/platform boundaries, original/candidate/
+  transitive-source/tool/corpus bindings, target image checks and fresh bound negative controls.
+- Approved external-verifier protocol, non-compensating statuses, exact recount and native
+  Control8.4 audits/close integration. C qualification reuses the existing execution pipeline.
+- 44 regression cases (167 Decompile total), a generic integration pilot and downloadable
+  standalone/full-source archives with canonical manifests and public validation receipts.
+
+### Preserved and migration
+
+- Existing completion, closure, grade/census, inventory and preservation APIs, stock/recon
+  separation and both sibling skills remain. Profile/category changes require explicit authorized
+  mission revision; there is no automatic migration, installation or added execution authority.
+- Windows/Linux local qualification and actual host GCC/process comparison are documented.
+  ARM firmware, hardware and real LLVM equivalence were not validated by those pilots.
+
 ## Decompile 2.0.0 — 2026-11-11 (component tag decompile-v2.0.0)
 
 - Published the previously qualified completion pipeline, live Control8.4 census and audited counts.

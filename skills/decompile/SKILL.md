@@ -8,7 +8,7 @@ metadata:
 
 # DisasmLedger Decompile
 
-## Generic qualification — 3.0 local preview
+## Generic qualification — 3.0
 
 Before claiming completion, read [generic qualification](references/generic-qualification.md).
 The new `qualification.py` is additive; all older scripts and grade formats remain supported.
