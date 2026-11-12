@@ -1,4 +1,4 @@
-name: Decompile 2.0 qualification
+name: Decompile 3.0 qualification
 
 on:
   pull_request:
@@ -50,9 +50,14 @@ jobs:
           persist-credentials: false
       - name: Live measurement integration pilot
         run: python -B skills/decompile/examples/run_measurement_pilot.py --harness _coordinator/harnesses/v8.4/scripts/harness.py
+      - name: Generic target qualification integration pilot
+        run: python -B skills/decompile/examples/run_qualification_pilot.py --harness _coordinator/harnesses/v8.4/scripts/harness.py
       - name: Real native GCC and process-image pilot
         if: runner.os == 'Linux'
         run: python -B skills/decompile/examples/run_measurement_pilot.py --harness _coordinator/harnesses/v8.4/scripts/harness.py --compiler /usr/bin/gcc
+      - name: Generic gates with actual native GCC
+        if: runner.os == 'Linux'
+        run: python -B skills/decompile/examples/run_qualification_pilot.py --harness _coordinator/harnesses/v8.4/scripts/harness.py --compiler /usr/bin/gcc
 
   required:
     name: Decompile qualification required

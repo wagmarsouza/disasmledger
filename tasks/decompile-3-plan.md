@@ -32,10 +32,11 @@ window closure or Claude changes. Base: published Decompile2.0 commit77767910b14
 
 ## Slices and validation
 
-- [ ] S1: strict profile/category contracts, status algebra and pure adversarial tests (RED→GREEN).
-- [ ] S2: generic runner + source/identity/review binding; reuse C execution and target build checks.
-- [ ] S3: approved external verifier protocol, categories, controls, caching and native audit bridge.
-- [ ] S4: target examples (ARM Thumb, native ELF, external/IR, analysis), guide/core and version3.0.
+- [x] S1: strict profile/category contracts, status algebra and pure adversarial tests (RED→GREEN).
+- [x] S2: generic runner + source/identity/review binding; reuse C execution and target build checks.
+- [x] S3: approved external verifier protocol, categories, controls, C cache reuse and native audit bridge;
+  external adapters always execute freshly. Witnesses/negative inputs fixed before execution.
+- [x] S4: target examples (ARM Thumb, native ELF, external/IR, analysis), guide/core and version3.0.
 - [ ] Q1: category downgrade, hidden dependencies, missing/NA gates, placeholders, weak/replayed proof,
   mixed target/ABI/image, omitted corpus/observable, drift, duplicate/inflated units and audit tests.
 - [ ] Q2: unchanged legacy suites, sibling suites, native-harness integration and real GCC pilot where

@@ -1,12 +1,52 @@
 ---
 name: decompile
-description: "DisasmLedger Decompile: an evidence-bound, end-to-end playbook for recompilation-grade decompilation and disassembly — a stage pipeline, tool-per-stage routing, an explicit grade ladder, and differential-test scheduling that composes the binary-analysis-profile and renode-bench skills."
+description: "DisasmLedger Decompile: generic D-a..D-f qualification for decompilation with fixed categories, explicit target profiles, source-bound construction/behavioral evidence and native harness audits; preserves the staged workflow, grade ladder, closure scheduling and binary/bench integrations."
 metadata:
-  display-name: DisasmLedger Decompile 2.0
-  version: "2.0.0"
+  display-name: DisasmLedger Decompile 3.0
+  version: "3.0.0"
 ---
 
 # DisasmLedger Decompile
+
+## Generic qualification — 3.0 local preview
+
+Before claiming completion, read [generic qualification](references/generic-qualification.md).
+The new `qualification.py` is additive; all older scripts and grade formats remain supported.
+Choose the target profile and category **before** verification. No implicit mission migration.
+
+| Gate | General requirement | Target-specific implementation |
+| --- | --- | --- |
+| D-a | Effective, traceable recovery artifact | Original image, physical unit identity, actual source/IR/analysis file |
+| D-b | Representation fits the declared category | Source-bound review; appropriate AST/IR/analysis verifier |
+| D-c | Independent implementation and explicit dependency boundary | Complete original call graph, reconstructed callee closure, pinned platform exceptions |
+| D-d | Recovery integrity, no hidden placeholder | Complete body, unresolved-operation inventory, justified tool-specific failure markers |
+| D-e | Construction appropriate to the target/representation | Actual compiler/IR validator, ABI/tool recipe, resulting artifact identity |
+| D-f | Bounded behavioral/equivalence evidence | Original AND candidate, declared observables/assumptions, corpus or proof, healthy/known-bad controls |
+
+Four mandatory application rules:
+
+1. **Fixed category.** `analysis`, `mechanical-translation`, `recompilable`, or
+   `independent-validated`; failure never selects a weaker category. Only the last category,
+   with all six current gates, enters the reconstructed counter. Other milestones stay separate.
+2. **Fixed boundary.** Approve external/platform dependencies beforehand. An inventoried original
+   callee or the original image cannot be relabelled as a platform to hide delegation.
+3. **Current physical evidence.** Bind original, candidate, review, transitive sources, profile,
+   tool resources and validation inputs. Changes require revalidation. Adopt/change the contract
+   only through an explicitly authorized native mission revision; never edit `state.yaml`.
+4. **No compensation.** A missing, failed, unknown or N/A required gate blocks qualification.
+   A compile, round-trip, high score or many redundant vectors cannot replace another gate.
+
+Do not universally ban `goto`, register-like identifiers or hexadecimal data. They are review
+signals whose meaning depends on the representation and target. Do not claim readability,
+universal equivalence or hardware validation from those signals or a finite corpus. Profile
+scenario labels are input obligations, not measured branch coverage. Legacy G4-stock remains
+distinct from G4-recon; a historical grade map is never a source of currently verified counts.
+
+The C adapter reuses the existing compiler/executor pipeline for independent reconstruction.
+Other categories/languages/methods need an explicitly approved external verifier. The external
+protocol is implemented; no general LLVM prover, C++ parser or emulator is bundled. Hashes and
+reviewer names do not authenticate a hostile verifier/reviewer. Only the native harness closes,
+audits, seals and invalidates the count; these scripts emit observations, not mission authority.
 
 Use this skill when a mission must turn a binary or firmware image into source-level understanding that is **verified**, not merely plausible: reconstructing functions to code that compiles, matches, or is bench-confirmed. It is the orchestration layer of DisasmLedger — it decides *which tool runs at which stage* and *what evidence promotes a result* — and it composes the two helper skills:
 

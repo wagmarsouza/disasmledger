@@ -1,0 +1,42 @@
+{
+  "format": "decompile-target-profile-v1",
+  "id": "analysis-only-adapter-required",
+  "target": {
+    "architectures": [
+      "x86_64"
+    ],
+    "endianness": "little",
+    "address_unit_bytes": 1,
+    "isa_modes": [
+      "native"
+    ]
+  },
+  "language": "analysis-report",
+  "backend": "external-v1",
+  "reviewers": [
+    "review-required"
+  ],
+  "dependencies": {
+    "allowed_external_calls": [],
+    "platform_images": {}
+  },
+  "build": {
+    "format": "adapter-validated",
+    "bits": null,
+    "machine": null
+  },
+  "validation": {
+    "method": "none",
+    "execution_kind": "adapter",
+    "min_cases": 0,
+    "observables": [],
+    "required_scenarios": [],
+    "assumptions": [
+      "REPLACE: reviewed analytical scope, no behavioral claim"
+    ]
+  },
+  "stub_markers": [
+    "halt_baddata",
+    "Could not recover"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "format": "decompile-external-verifier-v1",
+  "argv": [
+    "python",
+    "tool-resources/approved_verifier.py"
+  ],
+  "executable_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "files": {
+    "tool-resources/approved_verifier.py": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "entrypoints": {
+    "U1": "REPLACE-real-entrypoint"
+  },
+  "witnesses": {},
+  "negative_candidates": {
+    "U1": {
+      "path": "negative/U1.ir",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  },
+  "timeout_seconds": 300
+}

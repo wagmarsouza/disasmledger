@@ -1,5 +1,10 @@
 # DisasmLedger
 
+**Local development preview: Decompile 3.0.** Generic D-a..D-f qualification, fixed categories
+and explicit target profiles are documented in [the new guide](skills/decompile/references/generic-qualification.md).
+This working copy has not been installed or published. The published release linked below remains
+historical Decompile2.0. Existing APIs and the sibling skills are preserved.
+
 [![skills.sh](https://skills.sh/b/wagmarsouza/disasmledger)](https://skills.sh/wagmarsouza/disasmledger)
 
 ![DisasmLedger: bytes and traces backed by evidence](assets/disasmledger-logo.png)

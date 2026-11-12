@@ -1,0 +1,15 @@
+{
+  "format": "decompile-recovery-review-v1",
+  "unit": "U1",
+  "source_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "category": "independent-validated",
+  "representation": "structured",
+  "reviewer": "review-required",
+  "body_complete": false,
+  "unresolved_operations": [
+    "REPLACE: review all recovery gaps before clearing this list"
+  ],
+  "dependencies_complete": false,
+  "dependencies": [],
+  "marker_justifications": {}
+}

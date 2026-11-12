@@ -1,0 +1,40 @@
+{
+  "format": "decompile-qualification-contract-v1",
+  "id": "REPLACE-approved-mission-epoch",
+  "category": "independent-validated",
+  "profile": {
+    "path": "analysis/target-profile.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "target": {
+    "path": "analysis/target.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "universe": {
+    "path": "analysis/universe.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "callgraph": "analysis/callgraph.json",
+  "backend": {
+    "kind": "c-source-v1",
+    "config": {
+      "path": "analysis/completion-config.json",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  },
+  "reviews": {
+    "U1": "analysis/reviews/U1.recovery.json"
+  },
+  "unit_manifests": {
+    "U1": "analysis/units/U1.json"
+  },
+  "input_patterns": [
+    "src/**/*",
+    "negative/**/*",
+    "analysis/**/*.json",
+    "evidence/**/*",
+    "tool-resources/**/*"
+  ],
+  "budget_seconds": 600,
+  "work_pattern": "qualification/{run}"
+}
