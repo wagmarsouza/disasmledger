@@ -15,6 +15,17 @@ import sys
 GRADES = {'G0', 'G1', 'G2', 'G3', 'G4-stock', 'G4-recon', 'G4'}
 
 
+def qualified_units(candidates, dependencies):
+    """Greatest dependency-closed subset; unknown/excluded dependencies never become passes."""
+    current = set(candidates)
+    require(current <= set(dependencies), 'DEPENDENCY', 'Unknown qualified unit')
+    while True:
+        after = {uid for uid in current if dependencies[uid] is not None and set(dependencies[uid]) <= current}
+        if after == current:
+            return current
+        current = after
+
+
 class ClosureError(ValueError):
     def __init__(self, code, message):
         super().__init__(message)

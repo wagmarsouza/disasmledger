@@ -310,10 +310,7 @@ class Verifier:
             need(len(old)==len(packet['units']),'Duplicate units in previous report')
         rows=[self.unit(uid,old.get(uid),uid in force_ids) for uid in sorted(self.live)]
         eligible={r['id'] for r in rows if all(s=='pass' for s in r['gates'].values())}
-        while True:
-            after={u for u in eligible if set(self.units[u]['depends_on'])<=eligible}
-            if after==eligible:break
-            eligible=after
+        eligible=closure.qualified_units(eligible,{u:r['depends_on'] for u,r in self.units.items()})
         self.context_current();self.remaining()
         return rows,sorted(eligible)
 

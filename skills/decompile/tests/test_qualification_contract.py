@@ -16,7 +16,7 @@ def target_profile():
         'dependencies':{'allowed_external_calls':[],'platform_images':{}},
         'build':{'format':'synthetic','bits':None,'machine':None},
         'validation':{'method':'differential','execution_kind':'pc-trace','min_cases':2,
-                      'observables':['return','termination'],'required_scenarios':[]},
+                      'observables':['return','termination'],'required_scenarios':[],'assumptions':[]},
         'stub_markers':['halt_baddata','Could not recover']}
 
 class QualificationContractTests(unittest.TestCase):

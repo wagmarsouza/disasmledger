@@ -11,6 +11,9 @@ REQUIRED={
     'independent-validated':set(CRITERIA)}
 STATUSES={'pass','fail','unknown','not-applicable'}
 
+class ProtocolError(ValueError):
+    """Malformed whole observations cannot be concealed as a valid zero-count measurement."""
+
 def need(condition,message):
     if not condition:raise ValueError(message)
 def text(value):return isinstance(value,str) and bool(value.strip())
@@ -62,14 +65,17 @@ def validate_profile(value):
              'ELF profile needs exact class and machine')
     else:need(b['bits'] is None and b['machine'] is None,'Non-ELF format cannot claim an ELF machine check')
     v=value['validation']
-    need(isinstance(v,dict) and set(v)=={'method','execution_kind','min_cases','observables','required_scenarios'} and
+    need(isinstance(v,dict) and set(v)=={'method','execution_kind','min_cases','observables','required_scenarios','assumptions'} and
          v['method'] in ('differential','symbolic-equivalence','formal-equivalence','none') and
          v['execution_kind'] in ('pc-trace','process-image','adapter') and type(v['min_cases']) is int and
-         names(v['observables'],True) and names(v['required_scenarios'],True),'Declare the actual validation method and scope')
+         names(v['observables'],True) and names(v['required_scenarios'],True) and names(v['assumptions'],True),
+         'Declare the actual validation method, assumptions and scope')
     if v['method']=='differential':
         need(v['min_cases']>=2 and names(v['observables']) and 'termination' in v['observables'],
              'Differential validation needs finite discriminating inputs and termination observations')
-    else:need(v['min_cases']==0 and not v['required_scenarios'],'Non-differential methods do not claim a vector count')
+    else:
+        need(v['min_cases']==0 and not v['required_scenarios'],'Non-differential methods do not claim a vector count')
+        if v['method']!='none':need(names(v['observables']),'Equivalence over no observables is not behavioral validation')
     if value['backend']=='c-source-v1':
         need(value['language']=='c' and v['method']=='differential' and
              v['execution_kind'] in ('pc-trace','process-image') and b['format'] in ('elf','synthetic'),
