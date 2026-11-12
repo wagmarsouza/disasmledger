@@ -20,6 +20,10 @@ def run(harness,compiler=None):
         bad='int f(int x){return x+2;}'
         if compiler:
             compiler=str(Path(compiler).resolve(strict=True))
+            # The synthetic fixture's 10s tool cap is not the native toolchain budget.
+            # Keep explicit finite limits; timeout still refuses the entire observation.
+            f.config.update(tool_timeout_seconds=45,budget_seconds=180)
+            f.contract['budget_seconds']=240
             good="int main(int argc,char **argv){return (argv[1][0]-'0')+1;}"
             bad="int main(int argc,char **argv){return (argv[1][0]-'0')+2;}"
             (f.root/'reference.c').write_text(good)
@@ -67,7 +71,7 @@ def run(harness,compiler=None):
         mission={'objective':'Qualify one synthetic unit with a fixed target profile', 'mode':'light',
             'in_scope':['one synthetic unit'],'out_of_scope':['real firmware','universal equivalence'],
             'criteria':criteria,'measurement_policy':policy,'budget':{'max_cycles':10,'max_cycle_seconds':600,
-                'max_check_seconds':120,'max_no_progress':10,'max_same_failures':10,'consolidate_every':10}}
+                'max_check_seconds':300 if compiler else 120,'max_no_progress':10,'max_same_failures':10,'consolidate_every':10}}
         h=engine.Harness(f.root);h.init(mission)
         def start(ids=None):
             review=h.review('completion')

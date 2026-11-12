@@ -37,11 +37,12 @@ window closure or Claude changes. Base: published Decompile2.0 commit77767910b14
 - [x] S3: approved external verifier protocol, categories, controls, C cache reuse and native audit bridge;
   external adapters always execute freshly. Witnesses/negative inputs fixed before execution.
 - [x] S4: target examples (ARM Thumb, native ELF, external/IR, analysis), guide/core and version3.0.
-- [ ] Q1: category downgrade, hidden dependencies, missing/NA gates, placeholders, weak/replayed proof,
+- [x] Q1: category downgrade, hidden dependencies, missing/NA gates, placeholders, weak/replayed proof,
   mixed target/ABI/image, omitted corpus/observable, drift, duplicate/inflated units and audit tests.
-- [ ] Q2: unchanged legacy suites, sibling suites, native-harness integration and real GCC pilot where
+- [x] Q2: unchanged legacy suites, sibling suites, native-harness integration and real GCC pilot where
   available; targeted guard inversions; Windows/Linux qualification with dependencies on local disks.
-- [ ] Q3: official skill validation, canonical manifests/CRC/SHA, extracted-resource parity and ZIPs
+- Q3 (post-source-freeze, authoritative result in delivery VALIDACAO_FINAL.json): official skill
+  validation, canonical manifests/CRC/SHA, extracted-resource parity and ZIPs
   with the canonical identity helper included for standalone distribution. No host/skill installation.
 
 Limits: adopted verifiers/reviewers and input completeness remain trusted. Physical hashes do not
