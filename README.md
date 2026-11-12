@@ -6,16 +6,18 @@
 
 Skills for traceable binary analysis and firmware test benches. The project contains three independent skills: `binary-analysis-profile` organises target identity, address maps, analysis units, and witnesses; `renode-bench` guides the creation of a Renode bench and the interpretation of program-counter traces; `decompile` orchestrates a staged, grade-gated reconstruction workflow over the other two and schedules work by call-graph closure. They can be used separately or together.
 
-**Current component release: [Decompile 2.0](docs/release-decompile-v2.0.0.md).**
+**Current component release: [Decompile 3.0](docs/release-decompile-v3.0.0.md).**
 The earlier repository-wide [2.3 preview](docs/release-v2.3.0-rc.1.md) remains available.
-Default-branch discovery now includes Decompile 2.0; use its component tag for reproducibility.
+Default-branch discovery includes Decompile 3.0; use `decompile-v3.0.0` for reproducibility.
 Publishing does not install tools or migrate a project. See the release's actual test limits.
 
-## Decompile 2.0
+## Decompile 3.0
 
-The current component release adds [evidence-qualified completion](docs/release-decompile-v2.0.0.md)
-and live Control8.4-backed counts while retaining legacy helpers. Tag: `decompile-v2.0.0`;
-this is independent of older repository-wide version numbers. Publishing installs nothing.
+Six generic gates (D-a..D-f), fixed categories and explicit target profiles qualify reconstruction
+through approved target-specific verifiers. See the [qualification guide](skills/decompile/references/generic-qualification.md)
+and [release notes/downloads](docs/release-decompile-v3.0.0.md). Native Control8.4 owns closure,
+live counts and audit authority. Existing APIs and the two sibling skills are preserved;
+[Decompile2.0](docs/release-decompile-v2.0.0.md) remains available. Publishing installs nothing.
 
 ## Included preservation refinements
 
@@ -119,7 +121,7 @@ reconcile or edit anything and does not claim that declared grades have been ind
 
 ## Using DisasmLedger with VeriMission
 
-The local preview also includes an optional [8.2 observation adapter](skills/decompile/references/verimission-adapter.md).
+The package also includes an optional [8.2 observation adapter](skills/decompile/references/verimission-adapter.md).
 It translates declared grade snapshots into native observations and checks frozen source bindings;
 it never copies VeriMission's reconciler or edits mission state. G4-stock stays distinct from
 reconstruction, and G0 exclusions/denominator are fixed per declared epoch. No installation,

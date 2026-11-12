@@ -1,0 +1,46 @@
+{
+  "format": "decompile-target-profile-v1",
+  "id": "llvm-ir-equivalence-adapter-required",
+  "target": {
+    "architectures": [
+      "x86_64"
+    ],
+    "endianness": "little",
+    "address_unit_bytes": 1,
+    "isa_modes": [
+      "native"
+    ]
+  },
+  "language": "llvm-ir",
+  "backend": "external-v1",
+  "reviewers": [
+    "review-required"
+  ],
+  "dependencies": {
+    "allowed_external_calls": [],
+    "platform_images": {}
+  },
+  "build": {
+    "format": "adapter-validated",
+    "bits": null,
+    "machine": null
+  },
+  "validation": {
+    "method": "formal-equivalence",
+    "execution_kind": "adapter",
+    "min_cases": 0,
+    "observables": [
+      "return",
+      "memory",
+      "termination"
+    ],
+    "required_scenarios": [],
+    "assumptions": [
+      "REPLACE: formal model linking original binary and candidate IR, semantics and input bounds"
+    ]
+  },
+  "stub_markers": [
+    "halt_baddata",
+    "Could not recover"
+  ]
+}

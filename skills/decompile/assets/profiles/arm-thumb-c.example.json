@@ -1,0 +1,49 @@
+{
+  "format": "decompile-target-profile-v1",
+  "id": "arm-thumb-c-reviewed-template",
+  "target": {
+    "architectures": [
+      "ARMv7E-M"
+    ],
+    "endianness": "little",
+    "address_unit_bytes": 1,
+    "isa_modes": [
+      "thumb"
+    ]
+  },
+  "language": "c",
+  "backend": "c-source-v1",
+  "reviewers": [
+    "review-required"
+  ],
+  "dependencies": {
+    "allowed_external_calls": [],
+    "platform_images": {}
+  },
+  "build": {
+    "format": "elf",
+    "bits": 32,
+    "machine": 40
+  },
+  "validation": {
+    "method": "differential",
+    "execution_kind": "pc-trace",
+    "min_cases": 8,
+    "observables": [
+      "return",
+      "memory",
+      "termination"
+    ],
+    "required_scenarios": [
+      "normal",
+      "boundary"
+    ],
+    "assumptions": [
+      "REPLACE: CPU/extensions/ABI, memory/peripheral/reset model and bounded input domain"
+    ]
+  },
+  "stub_markers": [
+    "halt_baddata",
+    "Could not recover"
+  ]
+}
